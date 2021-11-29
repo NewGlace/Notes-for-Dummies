@@ -1,0 +1,13 @@
+<!-- drawable/star.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#939393"
+        android:pathData="M5,6L8,4.3L9,3L12.5,2.2L14.3,2.7L18,2L19,3L5,7"/>
+    <path
+        android:fillColor="#939393"
+        android:pathData="M6,8L19,8L19,10L18,10L17,23L8,23L7,10L6,10"/>
+</vector>

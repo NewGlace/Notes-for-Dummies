@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.MainActivity"
+    android:background="#0f0f22">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="#181834"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="#002879"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/dustbin"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/dustbon"
+        android:tint="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/add_notes"
+        app:layout_constraintTop_toTopOf="@id/textView4"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/select_all"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/select_all"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/note_list"
+        app:layout_constraintTop_toTopOf="@id/textView4"
+        android:visibility="invisible"/>
+    <Space
+        android:id="@+id/space5"
+        android:layout_width="30dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/select_all" />
+    <ImageView
+        android:id="@+id/move"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/move"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/space5"
+        app:layout_constraintTop_toTopOf="@id/textView4"
+        android:visibility="invisible"/>
+    <Space
+        android:id="@+id/space6"
+        android:layout_width="30dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/move" />
+    <ImageView
+        android:id="@+id/favorite"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/favorite"
+        android:tint="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/space6"
+        app:layout_constraintTop_toTopOf="@id/textView4"
+        android:visibility="invisible"/>
+    <Space
+        android:id="@+id/space"
+        android:layout_width="380dp"
+        android:layout_height="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vos notes"
+        android:textColor="#ffffff"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@id/space"
+        app:layout_constraintTop_toBottomOf="@id/space" />
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:layout_constraintBottom_toBottomOf="@id/textView"
+        app:layout_constraintEnd_toStartOf="@id/options"
+        app:layout_constraintTop_toBottomOf="@id/space" />
+
+    <ImageView
+        android:id="@+id/magnifying_glass"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/magnifying_glass"
+        app:layout_constraintBottom_toBottomOf="@id/textView"
+        app:layout_constraintEnd_toStartOf="@id/space2"
+        app:layout_constraintTop_toBottomOf="@id/space" />
+    <ImageView
+        android:id="@+id/false_magnifying_glass"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@id/textView"
+        app:layout_constraintEnd_toStartOf="@id/space2"
+        app:layout_constraintTop_toBottomOf="@id/space" />
+    <ImageView
+        android:id="@+id/options"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/options"
+        app:layout_constraintBottom_toBottomOf="@id/textView"
+        app:layout_constraintEnd_toEndOf="@id/space"
+        app:layout_constraintTop_toBottomOf="@id/space" />
+
+    <TextView
+        android:id="@+id/add_notes"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button"
+        app:layout_constraintBottom_toTopOf="@id/space3"
+        app:layout_constraintEnd_toStartOf="@id/space3" />
+
+    <Space
+        android:id="@+id/space3"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/cross"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/cross"
+        app:layout_constraintBottom_toBottomOf="@id/add_notes"
+        app:layout_constraintEnd_toEndOf="@id/add_notes"
+        app:layout_constraintTop_toTopOf="@id/add_notes"
+        app:layout_constraintStart_toStartOf="@id/add_notes"/>
+
+    <Space
+        android:id="@+id/space4"
+        android:layout_width="370dp"
+        android:layout_height="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView2" />
+
+    <ListView
+        android:id="@+id/note_list"
+        android:layout_width="370dp"
+        android:layout_height="650dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space4"
+        android:divider="#00000000"
+        android:dividerHeight="10dp"
+        android:scrollbars="none"/>
+    <EditText
+        android:id="@+id/search_bar"
+        android:layout_width="270dp"
+        android:layout_height="33dp"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="@id/textView"
+        app:layout_constraintEnd_toStartOf="@id/space2"
+        android:visibility="invisible"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

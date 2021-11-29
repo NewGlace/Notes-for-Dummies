@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Space
+        android:id="@+id/space8"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="@id/imageView"
+        app:layout_constraintTop_toTopOf="@id/imageView" />
+    <Space
+        android:id="@+id/space9"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/colorPicker" />
+    <Space
+        android:id="@+id/space10"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/SeekBarRedPickerColor" />
+    <Space
+        android:id="@+id/space11"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintStart_toStartOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/SeekBarGreenPickerColor" />
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:background="@drawable/bg_dialog"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/colorPicker"
+        android:layout_width="280dp"
+        android:layout_height="160dp"
+        android:src="@drawable/bg_dialog"
+        app:layout_constraintEnd_toEndOf="@id/imageView"
+        app:layout_constraintStart_toStartOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/space8" />
+
+    <SeekBar
+        android:id="@+id/SeekBarRedPickerColor"
+        style="@style/SeekBarRedPickerColor"
+        android:layout_width="255dp"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="10"
+        android:thumb="@drawable/circle_bar"
+        app:layout_constraintEnd_toEndOf="@id/space9"
+        app:layout_constraintStart_toStartOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/space9" />
+    <SeekBar
+        android:id="@+id/SeekBarGreenPickerColor"
+        style="@style/SeekBarGreenPickerColor"
+        android:layout_width="255dp"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:min="0"
+        android:progress="10"
+        android:thumb="@drawable/circle_bar"
+        app:layout_constraintEnd_toEndOf="@id/space9"
+        app:layout_constraintStart_toStartOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/space10" />
+    <SeekBar
+        android:id="@+id/SeekBarBluePickerColor"
+        style="@style/SeekBarBluePickerColor"
+        android:layout_width="255dp"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:min="0"
+        android:progress="10"
+        android:thumb="@drawable/circle_bar"
+        app:layout_constraintEnd_toEndOf="@id/space9"
+        app:layout_constraintStart_toStartOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/space11" />
+
+    <EditText
+        android:id="@+id/hexColor"
+        android:maxLength="7"
+        android:layout_width="85dp"
+        android:layout_height="40dp"
+        android:maxHeight="40dp"
+        android:text="#FFFFFF"
+        android:gravity="center"
+        android:background="@drawable/bg_notes"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="@id/imageView"
+        app:layout_constraintStart_toEndOf="@id/space11"
+        app:layout_constraintTop_toBottomOf="@id/SeekBarBluePickerColor" />
+
+    <TextView
+        android:id="@+id/valid"
+        android:layout_width="85dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_notes"
+        android:gravity="center"
+        android:text="VALIDE"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="@id/hexColor"
+        app:layout_constraintEnd_toEndOf="@id/SeekBarBluePickerColor" />
+</androidx.constraintlayout.widget.ConstraintLayout>

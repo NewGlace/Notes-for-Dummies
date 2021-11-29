@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="CheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorSecondary">#192241</item>
+    </style>
+
+    <style name="SeekBarRedPickerColor" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressBackgroundTint">#656565</item>
+        <item name="android:progressTint">#AC0000</item>
+        <item name="android:thumbTint">#AC0000</item>
+    </style>
+    <style name="SeekBarGreenPickerColor" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressBackgroundTint">#656565</item>
+        <item name="android:progressTint">#0000AC</item>
+        <item name="android:thumbTint">#0000AC</item>
+    </style>
+    <style name="SeekBarBluePickerColor" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressBackgroundTint">#656565</item>
+        <item name="android:progressTint">#00AC00</item>
+        <item name="android:thumbTint">#00AC00</item>
+    </style>
+</resources>
