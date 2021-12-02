@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,20 +27,22 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.util.Size;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
@@ -50,8 +50,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
@@ -63,12 +61,10 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.multi.qrcode.QRCodeMultiReader;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 import fr.newglace.notedesnazes.Database.MyDatabaseHelper;
@@ -92,6 +88,11 @@ public class NoteActivity extends AppCompatActivity {
     private String qrCode;
     private ImageAnalysis imageAnalysis;
     private Activity activity;
+    private TextView button,bold,italic,color,backgroundColor,underline,strike,super1,sub2, textView2, iconButton, blockMarkDown, textView5, textView6;
+    private ImageView star,option,addImage,normal,center,opposite;
+    private Space space, space4, space5, space3;
+    private SeekBar seekBar;
+    private int descHeight, phoneHeight, descWidth;
 
     public InputFilter filter = (charSequence, i, i1, spanned, i2, i3) -> {
         String blockCharSet = "\n";
@@ -116,24 +117,34 @@ public class NoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-        TextView button = findViewById(R.id.add_notes);
-        TextView bold = findViewById(R.id.bold);
-        TextView italic = findViewById(R.id.italic);
-        TextView color = findViewById(R.id.color);
-        TextView backgroundColor = findViewById(R.id.bg_color);
-        TextView underline = findViewById(R.id.underline);
-        TextView strike = findViewById(R.id.strike);
-        TextView super1 = findViewById(R.id.super1);
-        TextView sub2 = findViewById(R.id.sub2);
-        ImageView star = findViewById(R.id.star);
-        ImageView option = findViewById(R.id.options);
-        ImageView addImage = findViewById(R.id.add_image);
-        ImageView normal = findViewById(R.id.normal);
-        ImageView center = findViewById(R.id.center);
-        ImageView opposite = findViewById(R.id.opposite);
-
+        button = findViewById(R.id.add_notes);
+        bold = findViewById(R.id.bold);
+        italic = findViewById(R.id.italic);
+        color = findViewById(R.id.color);
+        backgroundColor = findViewById(R.id.bg_color);
+        underline = findViewById(R.id.underline);
+        strike = findViewById(R.id.strike);
+        super1 = findViewById(R.id.super1);
+        sub2 = findViewById(R.id.sub2);
+        star = findViewById(R.id.star);
+        option = findViewById(R.id.options);
+        addImage = findViewById(R.id.add_image);
+        normal = findViewById(R.id.normal);
+        center = findViewById(R.id.center);
+        opposite = findViewById(R.id.opposite);
+        textView2 = findViewById(R.id.textView2);
+        space = findViewById(R.id.space);
+        space4 = findViewById(R.id.space4);
+        space5 = findViewById(R.id.space5);
+        space3 = findViewById(R.id.space3);
         previewView = findViewById(R.id.activity_main_previewView);
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        iconButton = findViewById(R.id.icon_button);
+        blockMarkDown = findViewById(R.id.para);
+        textView5 = findViewById(R.id.textView5);
+        textView6 = findViewById(R.id.textView6);
+        seekBar = findViewById(R.id.size);
+
         this.title = findViewById(R.id.note_title);
         this.desc = findViewById(R.id.note_desc);
         this.activity = this;
@@ -160,7 +171,6 @@ public class NoteActivity extends AppCompatActivity {
         spannableString.setSpan(new SubscriptSpan(), 1, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sub2.setText(spannableString);
 
-        SeekBar seekBar = findViewById(R.id.size);
         String password = "";
         final boolean[] favorite = {false};
         int folderPosition = 0;
@@ -171,6 +181,8 @@ public class NoteActivity extends AppCompatActivity {
 
         id = bundle.getInt("id");
         String folder = bundle.getString("folder");
+
+        reSize();
 
         if (id != -1) {
             this.title.setText(db.getNote(id).getNoteTitle());
@@ -346,6 +358,19 @@ public class NoteActivity extends AppCompatActivity {
 
             }
         });
+        desc.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            desc.getWindowVisibleDisplayFrame(r);
+            int visible = r.bottom - r.top;
+
+            if (phoneHeight == visible) {
+                reSize2(desc, descWidth, descHeight);
+                reSize2(previewView, descWidth, descHeight);
+            } else {
+                reSize2(desc, descWidth, descHeight-(phoneHeight-visible));
+                reSize2(previewView, descWidth, descHeight-(phoneHeight-visible));
+            }
+        });
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void editSpan2(String type, String... option) {
@@ -436,12 +461,17 @@ public class NoteActivity extends AppCompatActivity {
             if (startLine == -1) startLine = 0;
         }
         Spannable span = desc.getText();
-        if (type.equals("normal"))
-            span.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_NORMAL), startLine, endLine, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        else if (type.equals("center"))
-            span.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), startLine, endLine, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        else if (type.equals("opposite"))
-            span.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE), startLine, endLine, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        switch (type) {
+            case "normal":
+                span.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_NORMAL), startLine, endLine, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                break;
+            case "center":
+                span.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), startLine, endLine, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                break;
+            case "opposite":
+                span.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE), startLine, endLine, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                break;
+        }
 
         desc.setText(span);
         desc.setSelection(startSelect, endSelect);
@@ -580,11 +610,7 @@ public class NoteActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startCamera();
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
-            }
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
         }
     }
 
@@ -613,24 +639,27 @@ public class NoteActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(context));
     }
 
+    Preview preview = null;
+    CameraSelector cameraSelector;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void bindCameraPreview(@NonNull ProcessCameraProvider cameraProvider) {
         previewView.setImplementationMode(PreviewView.ImplementationMode.PERFORMANCE);
-        Preview preview = new Preview.Builder()
-                .build();
 
-        CameraSelector cameraSelector = new CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build();
+        if (preview == null) {
+            preview = new Preview.Builder()
+                    .build();
 
-        preview.setSurfaceProvider(previewView.getSurfaceProvider());
+            cameraSelector = new CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build();
 
-        imageAnalysis =
-                new ImageAnalysis.Builder()
-                        .setTargetResolution(new Size(1280, 720))
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build();
+            preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
+            imageAnalysis = new ImageAnalysis.Builder()
+                    .setTargetResolution(new Size(1280, 720))
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build();
+        }
 
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context), new QRCodeImageAnalyzer(new QRCodeFoundListener() {
             @Override
@@ -652,8 +681,8 @@ public class NoteActivity extends AppCompatActivity {
 
             }
         }));
-
         cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
+
     }
     void imageChooser() {
         Intent i = new Intent();
@@ -750,5 +779,72 @@ public class NoteActivity extends AppCompatActivity {
         }
 
         desc.setText(span);
+    }
+
+    private void reSize() {
+        final DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int phoneWidth = metrics.widthPixels;
+        phoneHeight = metrics.heightPixels;
+
+        int textView2Height = (int) (phoneHeight/12d);
+        int titleSize = (int) (textView2Height/2.5d);
+        int titleWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/10d);
+
+        textView2.setHeight(textView2Height);
+
+        reSize2(star, titleSize, titleSize);
+        reSize2(option, titleSize, titleSize);
+        reSize2(title, titleWidth, titleSize, true);
+        reSize2(space, phoneWidth - (int) (phoneWidth*0.1), 0);
+        reSize2(space5, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
+        reSize2(space3, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
+        reSize2(space4, 0, (int) (phoneHeight*0.02));
+
+        int buttonWidth = (int) ((phoneWidth/19d) * 2d);
+        int buttonHeight = (int) (phoneHeight/16d);
+        int iconButtonSize = Math.min(buttonWidth, buttonHeight) - (int) (Math.min(buttonWidth, buttonHeight) * 0.40d);
+
+        reSize2(button, Math.min(buttonWidth, buttonHeight), Math.min(buttonWidth, buttonHeight));
+        reSize2(iconButton, iconButtonSize, iconButtonSize);
+
+        int blockWidth = (int) ((phoneWidth/19d) * 11d);
+        int blockHeight = (int) (phoneHeight/8d);
+
+        descHeight = phoneHeight - titleSize - (int) ((phoneHeight*0.02) * 5) - blockHeight;
+        descWidth = phoneWidth - (int) (phoneWidth*0.1);
+
+        reSize2(desc, descWidth, descHeight);
+        reSize2(previewView, descWidth, descHeight);
+
+        int bigButton = Math.min((int) (blockWidth/6d), (int) (blockHeight/2.5d));
+        int mediumButton = bigButton - (int) (bigButton * 0.50);
+        blockWidth = bigButton*6;
+
+        reSize2(new View[]{bold, italic ,color ,backgroundColor ,underline ,strike}, bigButton, bigButton, true, true);
+        reSize2(new View[]{super1 ,sub2 ,addImage ,normal ,center ,opposite, textView5, textView6}, mediumButton, mediumButton, true, true);
+        reSize2(blockMarkDown, blockWidth, blockHeight);
+
+        reSize2(seekBar, blockWidth - (mediumButton*3), mediumButton);
+
+    }
+    private void reSize2(View view, int width, int height, boolean... options) {
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.width = width;
+        params.height = height;
+        view.setLayoutParams(params);
+
+        if (view instanceof TextView && options.length > 0 && options[0]) {
+            if (options.length > 1) {
+                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height/2d));
+            }
+
+        }
+    }
+    private void reSize2(View[] view, int width, int height, boolean... options) {
+        for(View v : view) {
+            reSize2(v, width, height, options);
+        }
     }
 }
