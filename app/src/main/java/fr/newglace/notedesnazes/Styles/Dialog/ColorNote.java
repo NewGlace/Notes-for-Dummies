@@ -89,6 +89,12 @@ public class ColorNote extends Dialog {
 
         Color.RGBToHSV(red, green, blue, color);
         editColorPickerHue(color[0]);
+
+        float hueFloat = 360.f / hue.getMeasuredWidth() * color[0];
+        if (hueFloat == 360.f) hueFloat = 0.f;
+        editColorPickerHue(hueFloat);
+
+        hueSelect.setX((float) (hue.getMeasuredWidth() / 360d * hueFloat)+space);
         float x = colorPicker.getMeasuredWidth()*color[1]*1.f;
         float y = (colorPicker.getMeasuredHeight()*color[2]*1.f)+1f;
 
@@ -110,48 +116,27 @@ public class ColorNote extends Dialog {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void reSize() {
-        reSize2 size = new reSize2();
-
-        final DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        int phoneWidth = metrics.widthPixels;
-        int phoneHeight = metrics.heightPixels;
-
-        colorPicker.setScaleType(ImageView.ScaleType.FIT_XY);
-        colorSelect.setScaleType(ImageView.ScaleType.FIT_XY);
-        cursorSize = 18f;
-
-        space = (float) (((phoneWidth/10d*7d) - (int) (phoneWidth/5d*3d)) / 2d - ((phoneWidth/25d)/2));
-        size.reSize2(imageView, (int) (phoneWidth/10d*7d), (int) (phoneHeight/19d*7d));
-        size.reSize2(colorPicker, (int) (phoneWidth/5d*3d), (int) (phoneHeight/16d*3d));
-        size.reSize2(valid, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
-        size.reSize2(hexColor, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
-        size.reSize2(new View[]{space8, space9, space10}, 0, (int) (phoneHeight/40d));
-        size.reSize2(hue, (int) (phoneWidth/5d*3d), (int) (phoneHeight/30d));
-        size.reSize2(hueSelect, (int) (phoneWidth/25d), (int) (phoneHeight/30d));
-        size.reSize2(colorSelect, (int) cursorSize, (int) cursorSize);
-        colorPickerWidth = (int) (phoneWidth/5d*3d);
-        colorPickerHeight = (int) (phoneHeight/16d*3d);
-    }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void editColorPickerHue(float f) {
         float[] color = {f, 1.f, 1.f};
         this.color[0] = f;
 
         Bitmap bitmap = Bitmap.createBitmap(colorPickerWidth, colorPickerHeight, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
+        Paint strokePaint = new Paint();
+        strokePaint.setStyle(Paint.Style.FILL);
+        strokePaint.setColor(Color.parseColor("#004596"));
+
         if (paint == null) {
             paint = new Paint();
-            shader = new LinearGradient(0.f, 0.f, 0.f, colorPickerHeight, 0xffffffff, 0xff000000, Shader.TileMode.CLAMP);
+            shader = new LinearGradient(5.f, 5.f, 5.f, colorPickerHeight-5, 0xffffffff, 0xff000000, Shader.TileMode.CLAMP);
         }
         int rgb = Color.HSVToColor(color);
-        Shader shader2 = new LinearGradient(0.f, 0.f, colorPickerWidth, 0.f, 0xffffffff, rgb, Shader.TileMode.CLAMP);
+        Shader shader2 = new LinearGradient(5.f, 5.f, colorPickerWidth-5, 5.f, 0xffffffff, rgb, Shader.TileMode.CLAMP);
         ComposeShader composeShader = new ComposeShader(shader, shader2, PorterDuff.Mode.MULTIPLY);
         paint.setShader(composeShader);
-        canvas.drawRect(0.f, 0.f, colorPickerWidth, colorPickerHeight, paint);
-
+        canvas.drawRoundRect(0.f, 0.f, colorPickerWidth, colorPickerHeight, 10, 10, strokePaint);
+        canvas.drawRoundRect(5.f, 5.f, colorPickerWidth-5, colorPickerHeight-5, 10, 10, paint);
         BitmapDrawable drawable = new BitmapDrawable(activity.getResources(), bitmap);
         colorPicker.setBackground(drawable);
     }
@@ -220,5 +205,32 @@ public class ColorNote extends Dialog {
             }
             return false;
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void reSize() {
+        reSize2 size = new reSize2();
+
+        final DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int phoneWidth = metrics.widthPixels;
+        int phoneHeight = metrics.heightPixels;
+
+        colorPicker.setScaleType(ImageView.ScaleType.FIT_XY);
+        colorSelect.setScaleType(ImageView.ScaleType.FIT_XY);
+        cursorSize = 18f;
+
+        space = (float) (((phoneWidth/10d*7d) - (int) (phoneWidth/5d*3d)) / 2d - ((phoneWidth/25d)/2));
+        size.reSize2(imageView, (int) (phoneWidth/10d*7d), (int) (phoneHeight/19d*7d));
+        size.reSize2(colorPicker, (int) (phoneWidth/5d*3d), (int) (phoneHeight/16d*3d));
+        size.reSize2(valid, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
+        size.reSize2(hexColor, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
+        size.reSize2(new View[]{space8, space9, space10}, 0, (int) (phoneHeight/40d));
+        size.reSize2(hue, (int) (phoneWidth/5d*3d), (int) (phoneHeight/30d));
+        size.reSize2(hueSelect, (int) (phoneWidth/25d), (int) (phoneHeight/30d));
+        size.reSize2(colorSelect, (int) cursorSize, (int) cursorSize);
+        colorPickerWidth = (int) (phoneWidth/5d*3d);
+        colorPickerHeight = (int) (phoneHeight/16d*3d);
     }
 }

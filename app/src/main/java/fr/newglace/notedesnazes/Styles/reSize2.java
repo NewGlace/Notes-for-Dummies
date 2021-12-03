@@ -17,8 +17,8 @@ public class reSize2 {
 
         if (view instanceof TextView && options.length > 0 && options[0]) {
             if (options.length > 1) {
-                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height/2d));
-            } else ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height));
+                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height/2.2d));
+            } else ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (height));
 
         }
     }
