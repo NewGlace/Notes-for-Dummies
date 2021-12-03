@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="300dp"
-        android:layout_height="400dp"
+        android:layout_height="330dp"
         android:background="@drawable/bg_dialog"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,19 +27,6 @@
         android:layout_height="20dp"
         app:layout_constraintEnd_toEndOf="@id/imageView"
         app:layout_constraintTop_toBottomOf="@id/colorPicker" />
-    <Space
-        android:id="@+id/space10"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        app:layout_constraintEnd_toEndOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/SeekBarRedPickerColor" />
-    <Space
-        android:id="@+id/space11"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        app:layout_constraintStart_toStartOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/SeekBarGreenPickerColor" />
-
 
     <ImageView
         android:id="@+id/colorPicker"
@@ -53,7 +40,7 @@
         android:id="@+id/color_select"
         android:layout_width="3dp"
         android:layout_height="3dp"
-        android:background="@drawable/button"
+        android:src="@drawable/view_finder"
         app:layout_constraintEnd_toEndOf="@id/imageView"
         app:layout_constraintStart_toStartOf="@id/imageView"
         app:layout_constraintTop_toBottomOf="@id/space8" />
@@ -76,45 +63,6 @@
         app:layout_constraintStart_toStartOf="@+id/hue"
         app:layout_constraintTop_toTopOf="@id/hue" />
 
-    <SeekBar
-        android:id="@+id/SeekBarRedPickerColor"
-        style="@style/SeekBarRedPickerColor"
-        android:layout_width="255dp"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:progress="10"
-        android:thumb="@drawable/circle_bar"
-        app:layout_constraintEnd_toEndOf="@id/space9"
-        app:layout_constraintStart_toStartOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/space9"
-        android:visibility="invisible"/>
-    <SeekBar
-        android:id="@+id/SeekBarGreenPickerColor"
-        style="@style/SeekBarGreenPickerColor"
-        android:layout_width="255dp"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:min="0"
-        android:progress="10"
-        android:thumb="@drawable/circle_bar"
-        app:layout_constraintEnd_toEndOf="@id/space9"
-        app:layout_constraintStart_toStartOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/space10"
-        android:visibility="invisible"/>
-    <SeekBar
-        android:id="@+id/SeekBarBluePickerColor"
-        style="@style/SeekBarBluePickerColor"
-        android:layout_width="255dp"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:min="0"
-        android:progress="10"
-        android:thumb="@drawable/circle_bar"
-        app:layout_constraintEnd_toEndOf="@id/space9"
-        app:layout_constraintStart_toStartOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/space11"
-        android:visibility="invisible"/>
-
     <EditText
         android:id="@+id/hexColor"
         android:layout_width="85dp"
@@ -125,9 +73,8 @@
         android:maxLength="7"
         android:text="#FFFFFF"
         android:textColor="#ffffff"
-        app:layout_constraintBottom_toBottomOf="@id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/SeekBarBluePickerColor"
-        app:layout_constraintTop_toBottomOf="@id/SeekBarBluePickerColor" />
+        app:layout_constraintBottom_toTopOf="@id/space10"
+        app:layout_constraintEnd_toEndOf="@+id/hue"/>
 
     <TextView
         android:id="@+id/valid"
@@ -137,6 +84,13 @@
         android:gravity="center"
         android:text="VALIDE"
         android:textColor="#ffffff"
-        app:layout_constraintBottom_toBottomOf="@id/hexColor"
-        app:layout_constraintEnd_toEndOf="@id/SeekBarBluePickerColor" />
+        app:layout_constraintBottom_toTopOf="@+id/space10"
+        app:layout_constraintStart_toStartOf="@+id/hue" />
+
+    <Space
+        android:id="@+id/space10"
+        android:layout_width="00dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="@+id/imageView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

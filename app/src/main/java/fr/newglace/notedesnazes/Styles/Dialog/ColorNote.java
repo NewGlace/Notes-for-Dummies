@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
@@ -27,12 +26,11 @@ import fr.newglace.notedesnazes.R;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class ColorNote extends Dialog {
-    private SeekBar r, g, b;
     private ImageView colorPicker, imageView, hue, hueSelect, colorSelect;
     private EditText hexColor;
     private TextView valid;
     private Activity activity;
-    private Space space8, space9, space10, space11;
+    private Space space8, space9, space10;
     private int colorPickerWidth;
     private int colorPickerHeight;
     private Paint paint;
@@ -47,9 +45,6 @@ public class ColorNote extends Dialog {
         setContentView(R.layout.color_picker);
 
         this.activity = activity;
-        r = findViewById(R.id.SeekBarRedPickerColor);
-        g = findViewById(R.id.SeekBarGreenPickerColor);
-        b = findViewById(R.id.SeekBarBluePickerColor);
         colorPicker = findViewById(R.id.colorPicker);
         hexColor = findViewById(R.id.hexColor);
         valid = findViewById(R.id.valid);
@@ -57,7 +52,6 @@ public class ColorNote extends Dialog {
         space8 = findViewById(R.id.space8);
         space9 = findViewById(R.id.space9);
         space10 = findViewById(R.id.space10);
-        space11 = findViewById(R.id.space11);
         hue = findViewById(R.id.hue);
         hueSelect = findViewById(R.id.hue_select);
         colorSelect = findViewById(R.id.color_select);
@@ -78,6 +72,8 @@ public class ColorNote extends Dialog {
         int green = Color.green(getColor());
         int blue = Color.blue(getColor());
 
+        colorSelect.setColorFilter(Color.rgb(255-red, 255-green, 255-blue));
+
         String hex = String.format("#%02x%02x%02x", red, green, blue);
         hexColor.setText(hex);
     }
@@ -93,6 +89,19 @@ public class ColorNote extends Dialog {
 
         Color.RGBToHSV(red, green, blue, color);
         editColorPickerHue(color[0]);
+        float x = colorPicker.getMeasuredWidth()*color[1]*1.f;
+        float y = (colorPicker.getMeasuredHeight()*color[2]*1.f)+1f;
+
+        if (x < colorPicker.getX()) x = colorPicker.getX();
+        if (y < colorPicker.getY()) y = colorPicker.getY();
+        if (x > colorPicker.getMeasuredWidth() + colorPicker.getX() - cursorSize)
+            x = colorPicker.getMeasuredWidth() + colorPicker.getX() - 0.001f - cursorSize;
+        if (y > colorPicker.getMeasuredHeight() + colorPicker.getY() - cursorSize)
+            y = colorPicker.getMeasuredHeight() +colorPicker.getY() - 0.001f - cursorSize;
+
+        colorSelect.setX(x);
+        colorSelect.setY(y);
+
         return hex;
     }
 
@@ -112,15 +121,15 @@ public class ColorNote extends Dialog {
         int phoneHeight = metrics.heightPixels;
 
         colorPicker.setScaleType(ImageView.ScaleType.FIT_XY);
-        cursorSize = 9f;
+        colorSelect.setScaleType(ImageView.ScaleType.FIT_XY);
+        cursorSize = 18f;
 
         space = (float) (((phoneWidth/10d*7d) - (int) (phoneWidth/5d*3d)) / 2d - ((phoneWidth/25d)/2));
-        size.reSize2(imageView, (int) (phoneWidth/10d*7d), (int) (phoneHeight/19d*9d));
+        size.reSize2(imageView, (int) (phoneWidth/10d*7d), (int) (phoneHeight/19d*7d));
         size.reSize2(colorPicker, (int) (phoneWidth/5d*3d), (int) (phoneHeight/16d*3d));
         size.reSize2(valid, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
         size.reSize2(hexColor, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
-        size.reSize2(new View[]{r, g, b}, (int) (phoneWidth/5d*3d), (int) (phoneHeight/40d));
-        size.reSize2(new View[]{space8, space9, space10, space11}, 0, (int) (phoneHeight/40d));
+        size.reSize2(new View[]{space8, space9, space10}, 0, (int) (phoneHeight/40d));
         size.reSize2(hue, (int) (phoneWidth/5d*3d), (int) (phoneHeight/30d));
         size.reSize2(hueSelect, (int) (phoneWidth/25d), (int) (phoneHeight/30d));
         size.reSize2(colorSelect, (int) cursorSize, (int) cursorSize);
