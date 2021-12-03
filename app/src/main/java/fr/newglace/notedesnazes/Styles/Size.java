@@ -2,13 +2,10 @@ package fr.newglace.notedesnazes.Styles;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.util.Arrays;
 
 public class Size {
     final DisplayMetrics metrics = new DisplayMetrics();
@@ -18,7 +15,6 @@ public class Size {
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         this.phoneWidth = metrics.widthPixels;
         this.phoneHeight = metrics.heightPixels;
-        Log.d("TAG", "Size: "+metrics.densityDpi + " | "+ metrics.density + " | "+  metrics.widthPixels + " | "+  metrics.heightPixels);
     }
 
     public int[] reSizing(View view,  String... options) {
