@@ -27,7 +27,9 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Size;
 import android.view.Display;
 import android.view.View;
@@ -59,6 +61,9 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.multi.qrcode.QRCodeMultiReader;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -89,7 +94,7 @@ public class NoteActivity extends AppCompatActivity {
     private Activity activity;
     private TextView button,bold,italic,color,backgroundColor,underline,strike,super1,sub2, textView2, iconButton, blockMarkDown, textView5, textView6;
     private ImageView star,option,addImage,normal,center,opposite;
-    private Space space, space4, space5, space3;
+    private Space space, space4, space5, space3, space11;
     private SeekBar seekBar;
     private int descHeight, phoneHeight, descWidth;
     private reSize2 size = new reSize2();
@@ -137,6 +142,7 @@ public class NoteActivity extends AppCompatActivity {
         space4 = findViewById(R.id.space4);
         space5 = findViewById(R.id.space5);
         space3 = findViewById(R.id.space3);
+        space11 = findViewById(R.id.space11);
         previewView = findViewById(R.id.activity_main_previewView);
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         iconButton = findViewById(R.id.icon_button);
@@ -767,6 +773,7 @@ public class NoteActivity extends AppCompatActivity {
         textView2.setHeight(textView2Height);
 
         size.reSize2(star, titleSize, titleSize);
+        size.reSize2(space11, (int) (titleSize/2d), 0);
         size.reSize2(option, titleSize, titleSize);
         size.reSize2(title, titleWidth, titleSize, true);
         size.reSize2(space, phoneWidth - (int) (phoneWidth*0.1), 0);
