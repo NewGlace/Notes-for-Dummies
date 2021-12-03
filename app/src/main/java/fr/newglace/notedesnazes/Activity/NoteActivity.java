@@ -29,10 +29,8 @@ import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
 import android.util.Size;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -75,6 +73,7 @@ import fr.newglace.notedesnazes.R;
 import fr.newglace.notedesnazes.Styles.Dialog.ColorNote;
 import fr.newglace.notedesnazes.Styles.Dialog.OptionNoteEdit;
 import fr.newglace.notedesnazes.Styles.Dialog.QRCode;
+import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class NoteActivity extends AppCompatActivity {
     private EditText title, desc;
@@ -93,6 +92,7 @@ public class NoteActivity extends AppCompatActivity {
     private Space space, space4, space5, space3;
     private SeekBar seekBar;
     private int descHeight, phoneHeight, descWidth;
+    private reSize2 size = new reSize2();
 
     public InputFilter filter = (charSequence, i, i1, spanned, i2, i3) -> {
         String blockCharSet = "\n";
@@ -112,7 +112,7 @@ public class NoteActivity extends AppCompatActivity {
         } else super.onBackPressed();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.P)
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -364,16 +364,16 @@ public class NoteActivity extends AppCompatActivity {
             int visible = r.bottom - r.top;
 
             if (phoneHeight == visible) {
-                reSize2(desc, descWidth, descHeight);
-                reSize2(previewView, descWidth, descHeight);
+                size.reSize2(desc, descWidth, descHeight);
+                size.reSize2(previewView, descWidth, descHeight);
             } else {
-                reSize2(desc, descWidth, descHeight-(phoneHeight-visible));
-                reSize2(previewView, descWidth, descHeight-(phoneHeight-visible));
+                size.reSize2(desc, descWidth, descHeight-(phoneHeight-visible));
+                size.reSize2(previewView, descWidth, descHeight-(phoneHeight-visible));
             }
         });
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void editSpan2(String type, String... option) {
+    public void editSpan2(String type, String... option) {
         int startSelect = desc.getSelectionStart(),
                 endSelect = desc.getSelectionEnd();
 
@@ -476,57 +476,29 @@ public class NoteActivity extends AppCompatActivity {
         desc.setText(span);
         desc.setSelection(startSelect, endSelect);
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void editSpan(View view, String type) {
         view.setOnClickListener(v -> editSpan2(type));
     }
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void editSpanColor(TextView view, String type) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View view) {
-                ColorNote dialog = new ColorNote(activity);
-                Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.build();
-                dialog.editColorPicker();
+        view.setOnClickListener(view12 -> {
+            ColorNote dialog = new ColorNote(activity);
+            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.build();
+            dialog.editColorPicker();
 
-                update(dialog.getR(), dialog);
-                update(dialog.getG(), dialog);
-                update(dialog.getB(), dialog);
-
-                dialog.getHexColor().setOnEditorActionListener((textView, i, keyEvent) -> {
-                    dialog.editColorHex();
-                    editSpan2(type, dialog.getHexColor().getText().toString());
-                    return false;
-                });
-                dialog.getValid().setOnClickListener(view1 -> {
-                    dialog.editColorHex();
-                    String hex = dialog.getHexColor().getText().toString();
-                    editSpan2(type, hex);
-                    dialog.dismiss();
-                });
-            }
-
-            private void update(SeekBar seekBar, ColorNote dialog) {
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        dialog.editColorPicker();
-                        editSpan2(type, dialog.getHexColor().getText().toString());
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                });
-            }
+            dialog.update(this, type);
+            dialog.getHexColor().setOnEditorActionListener((a, b ,c) -> {
+                String hex = dialog.editColorHex();
+                editSpan2(type, hex);
+                return false;
+            });
+            dialog.getValid().setOnClickListener(view1 -> {
+                String hex = dialog.editColorHex();
+                editSpan2(type, hex);
+                dialog.dismiss();
+            });
         });
     }
 
@@ -794,20 +766,20 @@ public class NoteActivity extends AppCompatActivity {
 
         textView2.setHeight(textView2Height);
 
-        reSize2(star, titleSize, titleSize);
-        reSize2(option, titleSize, titleSize);
-        reSize2(title, titleWidth, titleSize, true);
-        reSize2(space, phoneWidth - (int) (phoneWidth*0.1), 0);
-        reSize2(space5, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
-        reSize2(space3, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
-        reSize2(space4, 0, (int) (phoneHeight*0.02));
+        size.reSize2(star, titleSize, titleSize);
+        size.reSize2(option, titleSize, titleSize);
+        size.reSize2(title, titleWidth, titleSize, true);
+        size.reSize2(space, phoneWidth - (int) (phoneWidth*0.1), 0);
+        size.reSize2(space5, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
+        size.reSize2(space3, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
+        size.reSize2(space4, 0, (int) (phoneHeight*0.02));
 
         int buttonWidth = (int) ((phoneWidth/19d) * 2d);
         int buttonHeight = (int) (phoneHeight/16d);
         int iconButtonSize = Math.min(buttonWidth, buttonHeight) - (int) (Math.min(buttonWidth, buttonHeight) * 0.40d);
 
-        reSize2(button, Math.min(buttonWidth, buttonHeight), Math.min(buttonWidth, buttonHeight));
-        reSize2(iconButton, iconButtonSize, iconButtonSize);
+        size.reSize2(button, Math.min(buttonWidth, buttonHeight), Math.min(buttonWidth, buttonHeight));
+        size.reSize2(iconButton, iconButtonSize, iconButtonSize);
 
         int blockWidth = (int) ((phoneWidth/19d) * 11d);
         int blockHeight = (int) (phoneHeight/8d);
@@ -815,36 +787,18 @@ public class NoteActivity extends AppCompatActivity {
         descHeight = phoneHeight - titleSize - (int) ((phoneHeight*0.02) * 5) - blockHeight;
         descWidth = phoneWidth - (int) (phoneWidth*0.1);
 
-        reSize2(desc, descWidth, descHeight);
-        reSize2(previewView, descWidth, descHeight);
+        size.reSize2(desc, descWidth, descHeight);
+        size.reSize2(previewView, descWidth, descHeight);
 
         int bigButton = Math.min((int) (blockWidth/6d), (int) (blockHeight/2.5d));
         int mediumButton = bigButton - (int) (bigButton * 0.50);
         blockWidth = bigButton*6;
 
-        reSize2(new View[]{bold, italic ,color ,backgroundColor ,underline ,strike}, bigButton, bigButton, true, true);
-        reSize2(new View[]{super1 ,sub2 ,addImage ,normal ,center ,opposite, textView5, textView6}, mediumButton, mediumButton, true, true);
-        reSize2(blockMarkDown, blockWidth, blockHeight);
+        size.reSize2(new View[]{bold, italic ,color ,backgroundColor ,underline ,strike}, bigButton, bigButton, true, true);
+        size.reSize2(new View[]{super1 ,sub2 ,addImage ,normal ,center ,opposite, textView5, textView6}, mediumButton, mediumButton, true, true);
+        size.reSize2(blockMarkDown, blockWidth, blockHeight);
 
-        reSize2(seekBar, blockWidth - (mediumButton*3), mediumButton);
+        size.reSize2(seekBar, blockWidth - (mediumButton*3), mediumButton);
 
-    }
-    private void reSize2(View view, int width, int height, boolean... options) {
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-        params.width = width;
-        params.height = height;
-        view.setLayoutParams(params);
-
-        if (view instanceof TextView && options.length > 0 && options[0]) {
-            if (options.length > 1) {
-                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height/2d));
-            }
-
-        }
-    }
-    private void reSize2(View[] view, int width, int height, boolean... options) {
-        for(View v : view) {
-            reSize2(v, width, height, options);
-        }
     }
 }

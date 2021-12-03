@@ -20,12 +20,12 @@
         <item name="android:progressTint">#AC0000</item>
         <item name="android:thumbTint">#AC0000</item>
     </style>
-    <style name="SeekBarGreenPickerColor" parent="Widget.AppCompat.SeekBar">
+    <style name="SeekBarBluePickerColor" parent="Widget.AppCompat.SeekBar">
         <item name="android:progressBackgroundTint">#656565</item>
         <item name="android:progressTint">#0000AC</item>
         <item name="android:thumbTint">#0000AC</item>
     </style>
-    <style name="SeekBarBluePickerColor" parent="Widget.AppCompat.SeekBar">
+    <style name="SeekBarGreenPickerColor" parent="Widget.AppCompat.SeekBar">
         <item name="android:progressBackgroundTint">#656565</item>
         <item name="android:progressTint">#00AC00</item>
         <item name="android:thumbTint">#00AC00</item>
