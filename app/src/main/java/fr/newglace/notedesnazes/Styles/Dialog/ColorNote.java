@@ -1,76 +1,215 @@
 package fr.newglace.notedesnazes.Styles.Dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ComposeShader;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.util.DisplayMetrics;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Space;
 import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
-
+import fr.newglace.notedesnazes.Activity.NoteActivity;
 import fr.newglace.notedesnazes.R;
+import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class ColorNote extends Dialog {
     private SeekBar r, g, b;
-    private ImageView colorPicker;
+    private ImageView colorPicker, imageView, hue, hueSelect, colorSelect;
     private EditText hexColor;
     private TextView valid;
+    private Activity activity;
+    private Space space8, space9, space10, space11;
+    private int colorPickerWidth;
+    private int colorPickerHeight;
+    private Paint paint;
+    private Shader shader;
+    private final float[] color = { 1.f, 1.f, 1.f };
+    private float space;
+    private float cursorSize;
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     public ColorNote(Activity activity) {
         super(activity, R.style.Theme_AppCompat_DayNight_Dialog);
         setContentView(R.layout.color_picker);
 
-        this.r = findViewById(R.id.SeekBarRedPickerColor);
-        this.g = findViewById(R.id.SeekBarGreenPickerColor);
-        this.b = findViewById(R.id.SeekBarBluePickerColor);
-        this.colorPicker = findViewById(R.id.colorPicker);
-        this.hexColor = findViewById(R.id.hexColor);
-        this.valid = findViewById(R.id.valid);
-    }
-
-    public SeekBar getR() {
-        return r;
-    }
-    public SeekBar getG() {
-        return g;
-    }
-    public SeekBar getB() {
-        return b;
+        this.activity = activity;
+        r = findViewById(R.id.SeekBarRedPickerColor);
+        g = findViewById(R.id.SeekBarGreenPickerColor);
+        b = findViewById(R.id.SeekBarBluePickerColor);
+        colorPicker = findViewById(R.id.colorPicker);
+        hexColor = findViewById(R.id.hexColor);
+        valid = findViewById(R.id.valid);
+        imageView = findViewById(R.id.imageView);
+        space8 = findViewById(R.id.space8);
+        space9 = findViewById(R.id.space9);
+        space10 = findViewById(R.id.space10);
+        space11 = findViewById(R.id.space11);
+        hue = findViewById(R.id.hue);
+        hueSelect = findViewById(R.id.hue_select);
+        colorSelect = findViewById(R.id.color_select);
+        reSize();
+        editColorPickerHue(1.f);
+        hueSelect.setX((float) (hue.getMeasuredWidth() / 360d * 0.001f));
     }
     public TextView getValid() {
         return valid;
     }
+
     public EditText getHexColor() {
         return hexColor;
     }
 
     public void editColorPicker() {
-        String hex = String.format("#%02x%02x%02x", r.getProgress(), g.getProgress(), b.getProgress());
-        int color = Color.parseColor(hex);
-        colorPicker.setColorFilter(color);
+        int red = Color.red(getColor());
+        int green = Color.green(getColor());
+        int blue = Color.blue(getColor());
+
+        String hex = String.format("#%02x%02x%02x", red, green, blue);
         hexColor.setText(hex);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void editColorHex() {
+    public String editColorHex() {
         String hex = hexColor.getText().toString().replace("#", "");
         int red = Integer.valueOf( hex.length() >= 2 ? hex.substring(0, 2) : "ff", 16);
         int green = Integer.valueOf( hex.length() >= 4 ? hex.substring(2, 4) : "ff", 16);
         int blue = Integer.valueOf( hex.length() >= 6 ? hex.substring(4, 6) : "ff", 16);
 
-        r.setProgress(red);
-        g.setProgress(green);
-        b.setProgress(blue);
+        hex = String.format("#%02x%02x%02x", red, green, blue);
 
-        hex = String.format("#%02x%02x%02x", r.getProgress(), g.getProgress(), b.getProgress());
-
-        int c = Color.parseColor(hex);
-        colorPicker.setColorFilter(c);
+        Color.RGBToHSV(red, green, blue, color);
+        editColorPickerHue(color[0]);
+        return hex;
     }
+
     public void build() {
         show();
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void reSize() {
+        reSize2 size = new reSize2();
+
+        final DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int phoneWidth = metrics.widthPixels;
+        int phoneHeight = metrics.heightPixels;
+
+        colorPicker.setScaleType(ImageView.ScaleType.FIT_XY);
+        cursorSize = 9f;
+
+        space = (float) (((phoneWidth/10d*7d) - (int) (phoneWidth/5d*3d)) / 2d - ((phoneWidth/25d)/2));
+        size.reSize2(imageView, (int) (phoneWidth/10d*7d), (int) (phoneHeight/19d*9d));
+        size.reSize2(colorPicker, (int) (phoneWidth/5d*3d), (int) (phoneHeight/16d*3d));
+        size.reSize2(valid, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
+        size.reSize2(hexColor, (int) (phoneWidth/5d), (int) (phoneHeight/20d), true, true);
+        size.reSize2(new View[]{r, g, b}, (int) (phoneWidth/5d*3d), (int) (phoneHeight/40d));
+        size.reSize2(new View[]{space8, space9, space10, space11}, 0, (int) (phoneHeight/40d));
+        size.reSize2(hue, (int) (phoneWidth/5d*3d), (int) (phoneHeight/30d));
+        size.reSize2(hueSelect, (int) (phoneWidth/25d), (int) (phoneHeight/30d));
+        size.reSize2(colorSelect, (int) cursorSize, (int) cursorSize);
+        colorPickerWidth = (int) (phoneWidth/5d*3d);
+        colorPickerHeight = (int) (phoneHeight/16d*3d);
+    }
+    private void editColorPickerHue(float f) {
+        float[] color = {f, 1.f, 1.f};
+        this.color[0] = f;
+
+        Bitmap bitmap = Bitmap.createBitmap(colorPickerWidth, colorPickerHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        if (paint == null) {
+            paint = new Paint();
+            shader = new LinearGradient(0.f, 0.f, 0.f, colorPickerHeight, 0xffffffff, 0xff000000, Shader.TileMode.CLAMP);
+        }
+        int rgb = Color.HSVToColor(color);
+        Shader shader2 = new LinearGradient(0.f, 0.f, colorPickerWidth, 0.f, 0xffffffff, rgb, Shader.TileMode.CLAMP);
+        ComposeShader composeShader = new ComposeShader(shader, shader2, PorterDuff.Mode.MULTIPLY);
+        paint.setShader(composeShader);
+        canvas.drawRect(0.f, 0.f, colorPickerWidth, colorPickerHeight, paint);
+
+        BitmapDrawable drawable = new BitmapDrawable(activity.getResources(), bitmap);
+        colorPicker.setBackground(drawable);
+    }
+
+    private int getColor() {
+        final int argb = Color.HSVToColor(color);
+        return (argb & 0x00ffffff);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("ClickableViewAccessibility")
+    public void update(NoteActivity activity, String type) {
+        hue.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_MOVE
+                    || event.getAction() == MotionEvent.ACTION_DOWN
+                    || event.getAction() == MotionEvent.ACTION_UP) {
+
+                float x = event.getX();
+                if (x < 0.f) x = 0.f;
+                if (x > hue.getMeasuredWidth()) x = hue.getMeasuredWidth() - 0.001f;
+
+                float hueFloat = 360.f / hue.getMeasuredWidth() * x;
+                if (hueFloat == 360.f) hueFloat = 0.f;
+
+                editColorPickerHue(hueFloat);
+                hueSelect.setX((float) (hue.getMeasuredWidth() / 360d * hueFloat)+space);
+                editColorPicker();
+                activity.editSpan2(type, hexColor.getText().toString());
+
+                return true;
+            }
+            return false;
+        });
+        colorPicker.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_MOVE
+                    || event.getAction() == MotionEvent.ACTION_DOWN
+                    || event.getAction() == MotionEvent.ACTION_UP) {
+
+                float x = event.getX();
+                float y = event.getY();
+
+                if (x < colorPicker.getX()) x = colorPicker.getX();
+                if (y < colorPicker.getY()) y = colorPicker.getY();
+                if (x > colorPicker.getMeasuredWidth() + colorPicker.getX() - cursorSize)
+                    x = colorPicker.getMeasuredWidth() + colorPicker.getX() - 0.001f - cursorSize;
+                if (y > colorPicker.getMeasuredHeight() + colorPicker.getY() - cursorSize)
+                    y = colorPicker.getMeasuredHeight() +colorPicker.getY() - 0.001f - cursorSize;
+
+                colorSelect.setX(x);
+                colorSelect.setY(y);
+
+                x = event.getX();
+                y = event.getY();
+
+                if (x < 0.f) x = 0.f;
+                if (x > colorPicker.getMeasuredWidth()) x = colorPicker.getMeasuredWidth();
+                if (y < 0.f) y = 0.f;
+                if (y > colorPicker.getMeasuredHeight()) y = colorPicker.getMeasuredHeight();
+
+                color[1] = (1.f / colorPicker.getMeasuredWidth() * x);
+                color[2] = (1.f - (1.f / colorPicker.getMeasuredHeight() * y));
+
+                editColorPicker();
+                activity.editSpan2(type, hexColor.getText().toString());
+                return true;
+            }
+            return false;
+        });
     }
 }
