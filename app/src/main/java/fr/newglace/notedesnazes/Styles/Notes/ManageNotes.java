@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import fr.newglace.notedesnazes.Activity.MainActivity;
@@ -183,76 +182,99 @@ public class ManageNotes extends BaseAdapter {
             });
             return view;
         }
-        option.setOnClickListener(view12 -> {
-            optionUnClick[0] = false;
-            OptionNote dialog = new OptionNote(activity);
-            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.build();
-            optionUnClick[0] = true;
-
-            if (favorite[0]) {
-                int color = Color.parseColor("#D5B200");
-                dialog.getFavoriteColor().setColorFilter(color);
-            }
-            dialog.getDelete().setOnClickListener(view121 -> {
-                if (activity.getSelect(i+"")) activity.removeSelect(i+"");
-                db.deleteNote(i);
-                Toast.makeText(activity, "La note a été supprimé", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-
-                List<noteArray> notes = new ArrayList<>();
-                for (int i12 = 0; i12 < db.getNotesCount(); i12++) {
-                    notes.add(new noteArray(db.getNote(i12).getNoteTitle(), db.getNote(i12).getNoteContent(), i12, db.getNote(i12).isFavorite(),
-                            db.getNote(i12).getPassword(), db.getNote(i12).getVisual(), db.getNote(i12).getFolder(), db.getNote(i12).getPosition(), db.getNote(i12).getFolderPosition()));
-                }
-                listView.setAdapter(new ManageNotes(activity, notes, listView, select));
-            });
-            dialog.getFavorite().setOnClickListener(view1212 -> {
-                db.editNote(position, new Note(title, desc, !favorite[0], password[0], visual, folder, p, folderPosition));
-
-                if (favorite[0]) {
-                    Toast.makeText(activity, "La note a été retiré des favoris", Toast.LENGTH_SHORT).show();
-                    int color = Color.parseColor("#192241");
-                    background.setColorFilter(color);
+        option.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (password[0].length() == 0) {
+                    if (optionUnClick[0]) startOptions();
                 } else {
-                    Toast.makeText(activity, "La note a été ajouté aux favoris", Toast.LENGTH_SHORT).show();
-                    int color = Color.parseColor("#D5B200");
-                    background.setColorFilter(color);
-                }
+                    PasswordNote dialog = new PasswordNote(activity);
+                    Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.build();
 
-                favorite[0] = !favorite[0];
-                dialog.dismiss();
-            });
-            dialog.getPassword().setOnClickListener(view1213 -> {
-                if (password[0].equals("")) {
-                    PasswordNoteConfig dialog2 = new PasswordNoteConfig(activity);
-                    Objects.requireNonNull(dialog2.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dialog2.build();
-
-                    EditText pass = dialog2.getPassword();
-                    pass.setOnKeyListener((v, keyCode, event) -> {
-                        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                                (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                            if (pass.length() > 0) {
-                                Toast.makeText(activity, "La note a été vérouiller", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                                db.editNote(position, new Note(title, desc, favorite[0], pass.getText().toString(), visual, folder, p, folderPosition));
-
-                                password[0] = pass.getText().toString();
-                                dialog.dismiss();
-                                dialog2.dismiss();
-                                return true;
-                            }
-                        }
-                        dialog.dismiss();
+                    dialog.getPassword().setOnEditorActionListener((textView, i1, keyEvent) -> {
+                        if (password[0].equals(dialog.getPassword().getText().toString().replace("\n", ""))) {
+                            dialog.dismiss();
+                            startOptions();
+                        } else Toast.makeText(activity, "Mot de passe incorrect !", Toast.LENGTH_SHORT).show();
                         return false;
                     });
-
-                } else {
-                    Toast.makeText(activity, "Pas désactivable !", Toast.LENGTH_SHORT).show();
-
                 }
-            });
+            }
+
+            private void startOptions() {
+                optionUnClick[0] = false;
+                OptionNote dialog = new OptionNote(activity);
+                Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.build();
+                optionUnClick[0] = true;
+
+                if (password[0].length() > 0) {
+                    dialog.getLockText().setText("Déverouiller");
+                    dialog.getImageView5().setImageDrawable(activity.getDrawable(R.drawable.password_open));
+                }
+
+                if (favorite[0]) {
+                    int color = Color.parseColor("#D5B200");
+                    dialog.getFavoriteColor().setColorFilter(color);
+                }
+                dialog.getDelete().setOnClickListener(view121 -> {
+                    if (activity.getSelect(i+"")) activity.removeSelect(i+"");
+                    db.deleteNote(i);
+                    Toast.makeText(activity, "La note a été supprimé", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+
+                    activity.noteList(activity.getSearchBar().getText().toString(), activity.getSelectFolder());
+                });
+                dialog.getFavorite().setOnClickListener(view1212 -> {
+                    db.editNote(position, new Note(title, desc, !favorite[0], password[0], visual, folder, p, folderPosition));
+
+                    if (favorite[0]) {
+                        Toast.makeText(activity, "La note a été retiré des favoris", Toast.LENGTH_SHORT).show();
+                        int color = Color.parseColor("#192241");
+                        background.setColorFilter(color);
+                    } else {
+                        Toast.makeText(activity, "La note a été ajouté aux favoris", Toast.LENGTH_SHORT).show();
+                        int color = Color.parseColor("#D5B200");
+                        background.setColorFilter(color);
+                    }
+
+                    favorite[0] = !favorite[0];
+                    dialog.dismiss();
+                });
+                dialog.getPassword().setOnClickListener(vv -> {
+                    if (password[0].equals("")) {
+                        PasswordNoteConfig dialog2 = new PasswordNoteConfig(activity);
+                        Objects.requireNonNull(dialog2.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog2.build();
+
+                        EditText pass = dialog2.getPassword();
+                        pass.setOnKeyListener((v, keyCode, event) -> {
+                            if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                                    (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                                if (pass.length() > 0) {
+                                    Toast.makeText(activity, "La note a été vérouillée", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                    db.editNote(position, new Note(title, desc, favorite[0], pass.getText().toString(), visual, folder, p, folderPosition));
+
+                                    password[0] = pass.getText().toString();
+                                    dialog.dismiss();
+                                    dialog2.dismiss();
+                                    return true;
+                                }
+                            }
+                            dialog.dismiss();
+                            return false;
+                        });
+                    } else {
+                        Toast.makeText(activity, "La note a été déverouillée", Toast.LENGTH_SHORT).show();
+                        password[0] = "";
+                        descNote.setText(desc);
+                        db.editNote(position, new Note(title, desc, favorite[0], password[0], visual, folder, p, folderPosition));
+                        dialog.dismiss();
+                    }
+                });
+            }
         });
         background.setOnClickListener(view1 -> {
             if (select) {

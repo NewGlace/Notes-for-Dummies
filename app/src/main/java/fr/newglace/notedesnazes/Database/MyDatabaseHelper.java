@@ -109,14 +109,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
    public void deleteNote(int id) {
-        for (int i = id; i+1 < getNotesCount(); i++) {
+       Note deleteSave = new Note(getNote(id).getNoteTitle(), getNote(id).getNoteContent(), getNote(id).isFavorite(),
+               getNote(id).getPassword(), getNote(id).getVisual(), getNote(id).getFolder(),
+               getNote(id).getPosition(), getNote(id).getFolderPosition());
+
+       for (int i = id; i+1 < getNotesCount(); i++) {
             editNote(i, new Note(getNote(i+1).getNoteTitle(), getNote(i+1).getNoteContent(), getNote(i+1).isFavorite(),
                     getNote(i+1).getPassword(), getNote(i+1).getVisual(), getNote(i+1).getFolder(),
                     getNote(i+1).getPosition(), getNote(i+1).getFolderPosition()));
-        }
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NOTE, COLUMN_NOTE_ID + " = ?",
-                new String[] { String.valueOf(getNotesCount()-1) });
-        db.close();
+       }
+       editNote(getNotesCount()-1, deleteSave);
+
+       SQLiteDatabase db = this.getWritableDatabase();
+       db.delete(TABLE_NOTE, COLUMN_NOTE_ID + " = ?", new String[] { String.valueOf(getNotesCount()-1) });
+       db.close();
     }
 }

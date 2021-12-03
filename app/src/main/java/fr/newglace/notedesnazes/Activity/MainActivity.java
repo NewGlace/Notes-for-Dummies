@@ -42,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
     final int[] check = {0, 0};
     boolean select = false;
 
+    public EditText getSearchBar() {
+        return searchBar;
+    }
+    public String getSelectFolder() {
+        return selectFolder;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void addSelect(String id) {
         if (!selects.contains("!"+id+"!")) selects += id+"!";
@@ -71,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean getSelect(String id) {
         return selects.contains("!"+id+"!");
     }
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void setSelect(boolean select) {
         this.select = select;
@@ -105,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             if (selectAll.getDrawable() != drawable) selectAll.setImageDrawable(drawable);
         }
     }
-
     private InputFilter filter = (charSequence, i, i1, spanned, i2, i3) -> {
         String blockCharSet = "\n";
         if (charSequence != null && blockCharSet.contains(charSequence.toString())) {
@@ -113,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     };
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
@@ -142,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
             getFolder("");
         } else super.onBackPressed();
     }
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
         dustbin.setOnClickListener(view -> {
             if (selects.length() > 1) {
                 String[] arrayString = selects.substring(1, selects.length()-1).split("!");
@@ -250,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
 
         final String[] oldSearch = {""};
         noteList(oldSearch[0], selectFolder);
@@ -351,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void noteList(String filter, String stringFolder, int... options) {
+    public void noteList(String filter, String stringFolder, int... options) {
 
         if (stringFolder.length() == 0) title.setText("Vos notes");
         else title.setText(stringFolder);
