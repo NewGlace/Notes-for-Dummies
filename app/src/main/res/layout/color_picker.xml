@@ -73,8 +73,9 @@
         android:maxLength="7"
         android:text="#FFFFFF"
         android:textColor="#ffffff"
-        app:layout_constraintBottom_toTopOf="@id/space10"
-        app:layout_constraintEnd_toEndOf="@+id/hue"/>
+        app:layout_constraintBottom_toTopOf="@+id/space10"
+        app:layout_constraintStart_toStartOf="@+id/hue" />
+
 
     <TextView
         android:id="@+id/valid"
@@ -84,8 +85,8 @@
         android:gravity="center"
         android:text="VALIDE"
         android:textColor="#ffffff"
-        app:layout_constraintBottom_toTopOf="@+id/space10"
-        app:layout_constraintStart_toStartOf="@+id/hue" />
+        app:layout_constraintBottom_toTopOf="@id/space10"
+        app:layout_constraintEnd_toEndOf="@+id/hue"/>
 
     <Space
         android:id="@+id/space10"
