@@ -27,11 +27,11 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -61,9 +61,6 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.multi.qrcode.QRCodeMultiReader;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -77,6 +74,7 @@ import fr.newglace.notedesnazes.QRCode.QRCodeImageAnalyzer;
 import fr.newglace.notedesnazes.R;
 import fr.newglace.notedesnazes.Styles.Dialog.ColorNote;
 import fr.newglace.notedesnazes.Styles.Dialog.OptionNoteEdit;
+import fr.newglace.notedesnazes.Styles.Dialog.PasswordNoteConfig;
 import fr.newglace.notedesnazes.Styles.Dialog.QRCode;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
@@ -227,6 +225,12 @@ public class NoteActivity extends AppCompatActivity {
             this.desc.setText(span);
         }
 
+        final boolean[] finalFavorite = {favorite[0]};
+        final String[] finalPassword = {password};
+        String finalFolder = folder;
+        int finalPosition = position;
+        int finalFolderPosition = folderPosition;
+
         option.setOnClickListener(view12 -> {
             if (previewView.getVisibility() != View.INVISIBLE) return;
 
@@ -234,6 +238,43 @@ public class NoteActivity extends AppCompatActivity {
             Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.build();
 
+            if (finalPassword[0].length() > 0) {
+                dialog.getLockText().setText("Déverrouiller");
+                dialog.getImageView5().setImageDrawable(activity.getDrawable(R.drawable.password_open));
+            }
+
+            dialog.getPassword().setOnClickListener(v -> {
+                dialog.dismiss();
+                if (finalPassword[0].length() == 0) {
+                    PasswordNoteConfig dialog2 = new PasswordNoteConfig(activity);
+                    Objects.requireNonNull(dialog2.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog2.build();
+
+                    EditText pass = dialog2.getPassword();
+                    pass.setOnKeyListener((v1, keyCode, event) -> {
+                        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                            if (pass.length() > 0) {
+                                Toast.makeText(activity, "La note a été verrouillée", Toast.LENGTH_SHORT).show();
+                                finalPassword[0] = pass.getText().toString();
+                                dialog2.dismiss();
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                } else {
+                    finalPassword[0] = "";
+                    Toast.makeText(activity, "La note a été déverrouillée", Toast.LENGTH_SHORT).show();
+                }
+            });
+            dialog.getDelete().setOnClickListener(v -> {
+                if (id != -1) db.deleteNote(id);
+
+                dialog.dismiss();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            });
             dialog.getLoadGallery().setOnClickListener(v -> {
                 dialog.dismiss();
                 imageChooser();
@@ -246,7 +287,6 @@ public class NoteActivity extends AppCompatActivity {
                     requestCamera();
                 }
             });
-
             dialog.getQRCode().setOnClickListener(v -> {
                 dialog.dismiss();
 
@@ -278,12 +318,6 @@ public class NoteActivity extends AppCompatActivity {
             });
         });
 
-        final boolean[] finalFavorite = {favorite[0]};
-        String finalPassword = password;
-        String finalFolder = folder;
-        int finalPosition = position;
-        int finalFolderPosition = folderPosition;
-
         star.setOnClickListener(v -> {
             finalFavorite[0] = !finalFavorite[0];
             favorite[0] = !favorite[0];
@@ -311,7 +345,7 @@ public class NoteActivity extends AppCompatActivity {
                 Spannable span = desc.getText();
                 visual = generatedSpan(span);
 
-                Note note = new Note(titleText, desc.getText().toString(), finalFavorite[0], finalPassword, visual, finalFolder, finalPosition, finalFolderPosition);
+                Note note = new Note(titleText, desc.getText().toString(), finalFavorite[0], finalPassword[0], visual, finalFolder, finalPosition, finalFolderPosition);
                 if (id == -1) db.addNote(db.getNotesCount(), note);
                 else db.editNote(id, note);
 
@@ -364,18 +398,22 @@ public class NoteActivity extends AppCompatActivity {
 
             }
         });
-        desc.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        final boolean[] editDesc = {false};
+        bold.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             Rect r = new Rect();
-            desc.getWindowVisibleDisplayFrame(r);
+            bold.getWindowVisibleDisplayFrame(r);
             int visible = r.bottom - r.top;
 
-            if (phoneHeight == visible) {
+            if (phoneHeight == visible && editDesc[0]) {
                 size.reSize2(desc, descWidth, descHeight);
                 size.reSize2(previewView, descWidth, descHeight);
-            } else {
+                editDesc[0] = false;
+            } else if (phoneHeight != visible && !editDesc[0]) {
+                editDesc[0] = true;
                 size.reSize2(desc, descWidth, descHeight-(phoneHeight-visible));
                 size.reSize2(previewView, descWidth, descHeight-(phoneHeight-visible));
             }
+
         });
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -633,8 +671,9 @@ public class NoteActivity extends AppCompatActivity {
 
             preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
+
             imageAnalysis = new ImageAnalysis.Builder()
-                    .setTargetResolution(new Size(1280, 720))
+                    .setTargetResolution(new Size(descWidth, descHeight))
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build();
         }
@@ -759,6 +798,7 @@ public class NoteActivity extends AppCompatActivity {
         desc.setText(span);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     private void reSize() {
         final DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -793,6 +833,8 @@ public class NoteActivity extends AppCompatActivity {
 
         descHeight = phoneHeight - titleSize - (int) ((phoneHeight*0.02) * 5) - blockHeight;
         descWidth = phoneWidth - (int) (phoneWidth*0.1);
+
+        desc.setScrollBarSize(1);
 
         size.reSize2(desc, descWidth, descHeight);
         size.reSize2(previewView, descWidth, descHeight);

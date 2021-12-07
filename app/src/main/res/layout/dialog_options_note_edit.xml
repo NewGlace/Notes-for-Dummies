@@ -87,7 +87,7 @@
         android:id="@+id/imageView5"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:background="@drawable/password"
+        android:src="@drawable/password"
         app:layout_constraintBottom_toBottomOf="@id/imageView3"
         app:layout_constraintStart_toEndOf="@id/space"
         app:layout_constraintTop_toTopOf="@id/imageView3" />
@@ -123,9 +123,10 @@
         app:layout_constraintTop_toTopOf="@id/imageView4" />
 
     <TextView
+        android:id="@+id/lock"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
-        android:text="Vérouiller"
+        android:text="Vérrouiller"
         android:textColor="#fff"
         app:layout_constraintBottom_toBottomOf="@id/imageView3"
         app:layout_constraintStart_toEndOf="@id/space2"

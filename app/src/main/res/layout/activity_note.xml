@@ -196,16 +196,17 @@
         android:layout_height="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/icon_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="34dp"
+        android:layout_height="36dp"
         android:background="@drawable/check"
+        android:rotation="15"
         app:layout_constraintBottom_toBottomOf="@id/add_notes"
         app:layout_constraintEnd_toEndOf="@id/add_notes"
-        app:layout_constraintTop_toTopOf="@id/add_notes"
         app:layout_constraintStart_toStartOf="@id/add_notes"
-        android:rotation="15"/>
+        app:layout_constraintTop_toTopOf="@id/add_notes" />
 
     <ImageView
         android:id="@+id/normal"
