@@ -210,7 +210,7 @@ public class ManageNotes extends BaseAdapter {
                 optionUnClick[0] = true;
 
                 if (password[0].length() > 0) {
-                    dialog.getLockText().setText("Déverouiller");
+                    dialog.getLockText().setText("Déverrouiller");
                     dialog.getImageView5().setImageDrawable(activity.getDrawable(R.drawable.password_open));
                 }
 
@@ -253,8 +253,7 @@ public class ManageNotes extends BaseAdapter {
                             if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                                     (keyCode == KeyEvent.KEYCODE_ENTER)) {
                                 if (pass.length() > 0) {
-                                    Toast.makeText(activity, "La note a été vérouillée", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
+                                    Toast.makeText(activity, "La note a été verrouillée", Toast.LENGTH_SHORT).show();
                                     db.editNote(position, new Note(title, desc, favorite[0], pass.getText().toString(), visual, folder, p, folderPosition));
 
                                     password[0] = pass.getText().toString();
@@ -267,7 +266,7 @@ public class ManageNotes extends BaseAdapter {
                             return false;
                         });
                     } else {
-                        Toast.makeText(activity, "La note a été déverouillée", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "La note a été déverrouillée", Toast.LENGTH_SHORT).show();
                         password[0] = "";
                         descNote.setText(desc);
                         db.editNote(position, new Note(title, desc, favorite[0], password[0], visual, folder, p, folderPosition));
