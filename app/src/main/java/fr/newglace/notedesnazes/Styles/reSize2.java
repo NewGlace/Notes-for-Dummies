@@ -6,9 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class reSize2 {
-    public reSize2 () {
+    public reSize2 () {}
 
-    }
     public void reSize2(View view, int width, int height, boolean... options) {
         ViewGroup.LayoutParams params = view.getLayoutParams();
         params.width = width == -1 ? params.width : width;
@@ -18,8 +17,7 @@ public class reSize2 {
         if (view instanceof TextView && options.length > 0 && options[0]) {
             if (options.length > 1) {
                 ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height/2.2d));
-            } else ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (height));
-
+            } else ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (height/1.2d));
         }
     }
     public void reSize2(View[] view, int width, int height, boolean... options) {
