@@ -11,12 +11,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Space;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,25 +30,28 @@ import fr.newglace.notedesnazes.Styles.Dialog.OptionMove;
 import fr.newglace.notedesnazes.Styles.Notes.ManageNotes;
 import fr.newglace.notedesnazes.R;
 import fr.newglace.notedesnazes.Styles.Notes.noteArray;
-import fr.newglace.notedesnazes.Styles.Size;
+import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class MainActivity extends AppCompatActivity {
+    private ImageView search, dustbin, favorite, selectAll, move, falseSearch, option;
+    private String selects = "!", selectString = selects, selectFolder = "";
     private MyDatabaseHelper db = new MyDatabaseHelper(this);
-    TextView title, footer, cross, button;
-    ImageView search, dustbin, favorite, selectAll, move, falseSearch;
-    EditText searchBar;
-    ListView notes1;
-    String selects = "!";
-    String selectString = selects;
-    String selectFolder = "";
-    final int[] check = {0, 0};
-    boolean select = false;
+    private Space space3, space2, space, space4, space5, space6;
+    private TextView title, footer, cross, button, textView2;
+    private reSize2 size = new reSize2();
+    private final int[] check = {0, 0};
+    private boolean select = false;
+    private EditText searchBar;
+    private ListView notes1;
 
     public EditText getSearchBar() {
         return searchBar;
     }
     public String getSelectFolder() {
         return selectFolder;
+    }
+    public boolean getSelect(String id) {
+        return selects.contains("!"+id+"!");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -74,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
             int color = Color.parseColor("#ffffff");
             move.setColorFilter(color);
         }
-    }
-    public boolean getSelect(String id) {
-        return selects.contains("!"+id+"!");
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void setSelect(boolean select) {
@@ -113,11 +115,11 @@ public class MainActivity extends AppCompatActivity {
     }
     private InputFilter filter = (charSequence, i, i1, spanned, i2, i3) -> {
         String blockCharSet = "\n";
-        if (charSequence != null && blockCharSet.contains(charSequence.toString())) {
-            return "";
-        }
-        return null;
+        if (charSequence != null && blockCharSet.contains(charSequence.toString())) return "";
+        else if (charSequence != null && charSequence.toString().length() > 16) return charSequence.toString().subSequence(0, 16);
+        else return null;
     };
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
@@ -151,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new Size(this);
         falseSearch = findViewById(R.id.false_magnifying_glass);
         notes1 = findViewById(R.id.note_list);
         button = findViewById(R.id.add_notes);
@@ -164,6 +165,18 @@ public class MainActivity extends AppCompatActivity {
         selectAll = findViewById(R.id.select_all);
         move = findViewById(R.id.move);
         cross = findViewById(R.id.cross);
+        space2 = findViewById(R.id.space2);
+        space3 = findViewById(R.id.space3);
+        space4 = findViewById(R.id.space4);
+        space5 = findViewById(R.id.space5);
+        space6 = findViewById(R.id.space6);
+        textView2 = findViewById(R.id.textView2);
+        space = findViewById(R.id.space);
+        option = findViewById(R.id.options);
+
+        reSize();
+        final String[] oldSearch = {""};
+        noteList(oldSearch[0], selectFolder);
 
         move.setOnClickListener(view -> {
             if (selects.length() > 1 && !selects.contains("f-")) {
@@ -216,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = arrayString.length-1 ; i > -1 ; i--) {
                     if (!arrayString[i].contains("f-")) db.deleteNote(Integer.parseInt(arrayString[i]));
                     else {
-
+                        Log.d("TAG", "Delete Folder");
                     }
                 }
 
@@ -252,10 +265,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
-        final String[] oldSearch = {""};
-        noteList(oldSearch[0], selectFolder);
-
         button.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
 
@@ -266,7 +275,6 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
-
         searchBar.setFilters(new InputFilter[] {filter});
         searchBar.setOnFocusChangeListener((view, b) -> {
             if (b) check[1] = 1;
@@ -353,8 +361,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void noteList(String filter, String stringFolder, int... options) {
-
-        if (stringFolder.length() == 0) title.setText("Vos notes");
+        if (stringFolder.length() == 0) title.setText(this.getString(R.string.your_notes));
         else title.setText(stringFolder);
 
         List<noteArray> notes = new ArrayList<>();
@@ -391,5 +398,41 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean isFolder() {
         return selectFolder.length() == 0;
+    }
+
+    private void reSize() {
+        final DisplayMetrics metrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int phoneWidth = metrics.widthPixels;
+        int phoneHeight = metrics.heightPixels;
+
+        int textView2Height = (int) (phoneHeight/12d);
+        int titleSize = (int) (textView2Height/2.5d);
+        int titleWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/10d);
+        int searchBarWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/7d);
+
+        textView2.setHeight(textView2Height);
+        footer.setHeight(textView2Height);
+
+        size.reSize2(new View[]{search, falseSearch, option, favorite, selectAll, dustbin, move}, titleSize, titleSize);
+        size.reSize2(new Space[]{space2, space5, space6}, (int) (titleSize/2d), 0);
+        size.reSize2(title, titleWidth, titleSize, true);
+        size.reSize2(searchBar, searchBarWidth, titleSize, true);
+        size.reSize2(space, phoneWidth - (int) (phoneWidth*0.1), 0);
+        size.reSize2(space3, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
+        size.reSize2(space4, 0, (int) (phoneHeight*0.02));
+
+        int buttonWidth = (int) ((phoneWidth/19d) * 2d);
+        int buttonHeight = (int) (phoneHeight/16d);
+        int iconButtonSize = Math.min(buttonWidth, buttonHeight) - (int) (Math.min(buttonWidth, buttonHeight) * 0.40d);
+
+        size.reSize2(button, Math.min(buttonWidth, buttonHeight), Math.min(buttonWidth, buttonHeight));
+        size.reSize2(cross, iconButtonSize, iconButtonSize);
+
+        int descHeight = phoneHeight - titleSize - (int) ((phoneHeight*0.02) * 3) - (int) (phoneHeight/8d);
+        int descWidth = phoneWidth - (int) (phoneWidth*0.1);
+
+        size.reSize2(notes1, descWidth, descHeight);
     }
 }
