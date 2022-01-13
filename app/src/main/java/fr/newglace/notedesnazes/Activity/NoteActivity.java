@@ -810,8 +810,7 @@ public class NoteActivity extends AppCompatActivity {
         int titleSize = (int) (textView2Height/2.5d);
         int titleWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/10d);
 
-        textView2.setHeight(textView2Height);
-
+        size.reSize2(textView2, phoneWidth, textView2Height);
         size.reSize2(star, titleSize, titleSize);
         size.reSize2(space11, (int) (titleSize/2d), 0);
         size.reSize2(option, titleSize, titleSize);

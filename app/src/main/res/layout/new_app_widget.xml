@@ -1,21 +1,114 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#09C"
     android:padding="@dimen/widget_margin">
 
     <TextView
-        android:id="@+id/appwidget_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0f0f22"
+        android:alpha="0.9"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:background="#181834"
+        android:alpha="0.9" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="#181834"
+        android:alpha="0.9"
+        android:layout_alignParentTop="true"/>
+
+    <TextView
+        android:id="@+id/note_title_widget"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:background="@color/transparent"
+        android:text="@string/todo"
+        android:maxLength="18"
+        android:maxLines="1"
+        android:textColor="#ffffff"
+        android:textColorHighlight="#C33CBBFF"
+        android:textColorHint="#fff"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_alignTop="@id/textView2"
+        android:layout_alignBottom="@id/textView2"
+        android:layout_alignEnd="@id/textView2"
+        android:layout_alignRight="@id/textView2"
+        android:layout_alignStart="@id/textView2"
+        android:layout_alignLeft="@id/textView2"/>
+
+    <TextView
+        android:id="@+id/note_desc_widget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/textView"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="20dp"
+        android:background="@color/transparent"
+        android:gravity="top"
+        android:scrollbars="vertical"
+        android:text="@string/todo"
+        android:textColor="#d0d0d0"
+        android:textColorHighlight="#C33CBBFF"
+        android:textColorHint="#d0d0d0" />
+
+    <ImageView
+        android:id="@+id/button_down"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/textView"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:alpha="0.5"
+        android:src="@drawable/button2" />
+    <ImageView
+        android:id="@+id/button_up"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_above="@id/button_down"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:alpha="0.5"
+        android:src="@drawable/button2"
+        android:layout_marginEnd="10dp" />
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="8dp"
-        android:background="#09C"
-        android:contentDescription="@string/appwidget_text"
-        android:text="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
-        android:textStyle="bold|italic" />
+        android:layout_alignStart="@+id/button_up"
+        android:layout_alignLeft="@+id/button_up"
+        android:layout_alignTop="@+id/button_up"
+        android:layout_alignEnd="@+id/button_up"
+        android:layout_alignRight="@+id/button_up"
+        android:layout_alignBottom="@+id/button_up"
+        android:layout_marginTop="5dp"
+        android:rotation="90"
+        android:src="@drawable/left_arrow" />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/button_down"
+        android:layout_alignLeft="@+id/button_down"
+        android:layout_alignTop="@+id/button_down"
+        android:layout_alignEnd="@+id/button_down"
+        android:layout_alignRight="@+id/button_down"
+        android:layout_alignBottom="@+id/button_down"
+        android:layout_marginBottom="5dp"
+        android:rotation="-90"
+        android:src="@drawable/left_arrow" />
 </RelativeLayout>

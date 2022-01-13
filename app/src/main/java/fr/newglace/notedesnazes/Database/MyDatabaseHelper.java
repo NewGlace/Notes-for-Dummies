@@ -6,14 +6,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
 
-
 public class MyDatabaseHelper extends SQLiteOpenHelper {
-    private static final String TAG = "SQLite";
     private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "IPv4";
     private static final String TABLE_NOTE = "Note";
@@ -62,8 +57,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_NOTE_POSITION, note.getPosition());
         values.put(COLUMN_NOTE_FOLDER_POSITION, note.getFolderPosition());
 
-        db.update(TABLE_NOTE, values, COLUMN_NOTE_ID + " = ?",
-                new String[]{String.valueOf(id)});
+        db.update(TABLE_NOTE, values, COLUMN_NOTE_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
     public void addNote(int id, Note note) {
@@ -94,6 +88,10 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null) cursor.moveToFirst();
         assert cursor != null;
+
+        //db.delete(TABLE_NOTE, COLUMN_NOTE_ID + " != ?", new String[] { String.valueOf(999999) });
+        //db.close();
+
         return new Note(cursor.getString(1), cursor.getString(2), cursor.getString(3).equals("true"),
                 cursor.getString(4), cursor.getString(5), cursor.getString(6), Integer.parseInt(cursor.getString(7)),
                 Integer.parseInt(cursor.getString(8)));
@@ -109,16 +107,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
    public void deleteNote(int id) {
-       Note deleteSave = new Note(getNote(id).getNoteTitle(), getNote(id).getNoteContent(), getNote(id).isFavorite(),
-               getNote(id).getPassword(), getNote(id).getVisual(), getNote(id).getFolder(),
-               getNote(id).getPosition(), getNote(id).getFolderPosition());
-
-       for (int i = id; i+1 < getNotesCount(); i++) {
-            editNote(i, new Note(getNote(i+1).getNoteTitle(), getNote(i+1).getNoteContent(), getNote(i+1).isFavorite(),
-                    getNote(i+1).getPassword(), getNote(i+1).getVisual(), getNote(i+1).getFolder(),
-                    getNote(i+1).getPosition(), getNote(i+1).getFolderPosition()));
-       }
-       editNote(getNotesCount()-1, deleteSave);
+       for (int i = id; i+1 < getNotesCount(); i++) editNote(i,getNote(i+1));
+       Log.d(".....................", ": "+id + " aka " +(getNotesCount()-1));
 
        SQLiteDatabase db = this.getWritableDatabase();
        db.delete(TABLE_NOTE, COLUMN_NOTE_ID + " = ?", new String[] { String.valueOf(getNotesCount()-1) });

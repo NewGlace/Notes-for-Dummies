@@ -225,14 +225,21 @@ public class MainActivity extends AppCompatActivity {
         });
         dustbin.setOnClickListener(view -> {
             if (selects.length() > 1) {
-                String[] arrayString = selects.substring(1, selects.length()-1).split("!");
-                for (int i = arrayString.length-1 ; i > -1 ; i--) {
-                    if (!arrayString[i].contains("f-")) db.deleteNote(Integer.parseInt(arrayString[i]));
-                    else {
-                        Log.d("TAG", "Delete Folder");
+                int deleteNumber = 0;
+                int dbAll = db.getNotesCount();
+                for (int i = 0; i < dbAll; i++) {
+                    if (selects.contains("!"+i+"!")) {
+                        db.deleteNote(i- deleteNumber);
+                        deleteNumber++;
                     }
                 }
 
+                String[] arrayString = selects.substring(1, selects.length()-1).split("!");
+                for (int i = arrayString.length-1 ; i > -1 ; i--) {
+                    if (arrayString[i].contains("f-")) {
+                        Log.d("TAG", "Delete Folder");
+                    }
+                }
                 noteList(searchBar.getText().toString(), selectFolder);
                 footer.setVisibility(View.INVISIBLE);
                 dustbin.setVisibility(View.INVISIBLE);
@@ -412,9 +419,8 @@ public class MainActivity extends AppCompatActivity {
         int titleWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/10d);
         int searchBarWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/7d);
 
-        textView2.setHeight(textView2Height);
-        footer.setHeight(textView2Height);
-
+        size.reSize2(textView2, phoneWidth, textView2Height);
+        size.reSize2(footer, phoneWidth, textView2Height);
         size.reSize2(new View[]{search, falseSearch, option, favorite, selectAll, dustbin, move}, titleSize, titleSize);
         size.reSize2(new Space[]{space2, space5, space6}, (int) (titleSize/2d), 0);
         size.reSize2(title, titleWidth, titleSize, true);
@@ -430,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
         size.reSize2(button, Math.min(buttonWidth, buttonHeight), Math.min(buttonWidth, buttonHeight));
         size.reSize2(cross, iconButtonSize, iconButtonSize);
 
-        int descHeight = phoneHeight - titleSize - (int) ((phoneHeight*0.02) * 3) - (int) (phoneHeight/8d);
+        int descHeight = phoneHeight - textView2Height*2 - (int) ((phoneHeight*0.02) * 2);
         int descWidth = phoneWidth - (int) (phoneWidth*0.1);
 
         size.reSize2(notes1, descWidth, descHeight);
