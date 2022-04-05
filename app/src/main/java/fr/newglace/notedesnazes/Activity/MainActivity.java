@@ -33,6 +33,7 @@ import fr.newglace.notedesnazes.Styles.Notes.noteArray;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class MainActivity extends AppCompatActivity {
+    //text
     private ImageView search, dustbin, favorite, selectAll, move, falseSearch, option;
     private String selects = "!", selectString = selects, selectFolder = "";
     private MyDatabaseHelper db = new MyDatabaseHelper(this);
