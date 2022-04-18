@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "IPv4";
     private static final String TABLE_NOTE = "Note";
     private static final String COLUMN_NOTE_ID ="Note_Id";
@@ -21,6 +21,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_NOTE_FOLDER = "Note_Folder";
     private static final String COLUMN_NOTE_POSITION = "Note_Position";
     private static final String COLUMN_NOTE_FOLDER_POSITION = "Note_Folder_Position";
+    private static final String COLUMN_NOTE_COLOR_FOLDER = "Note_Color_Folder";
 
     public MyDatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -33,7 +34,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_NOTE_CONTENT + " TEXT," + COLUMN_NOTE_FAVORITE + " TEXT,"
                 + COLUMN_NOTE_PASSWORD + " TEXT,"+  COLUMN_NOTE_VISUAL + " TEXT,"
                 +  COLUMN_NOTE_FOLDER + " TEXT,"+  COLUMN_NOTE_POSITION + " TEXT,"
-                +  COLUMN_NOTE_FOLDER_POSITION + " TEXT"+ ")";
+                +  COLUMN_NOTE_FOLDER_POSITION + " TEXT,"+ COLUMN_NOTE_COLOR_FOLDER +"TEXT"+")";
         db.execSQL(script);
     }
 
@@ -56,6 +57,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_NOTE_FOLDER, note.getFolder());
         values.put(COLUMN_NOTE_POSITION, note.getPosition());
         values.put(COLUMN_NOTE_FOLDER_POSITION, note.getFolderPosition());
+        values.put(COLUMN_NOTE_COLOR_FOLDER, note.getColorFolder());
 
         db.update(TABLE_NOTE, values, COLUMN_NOTE_ID + " = ?", new String[]{String.valueOf(id)});
     }
@@ -73,6 +75,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_NOTE_FOLDER, note.getFolder());
         values.put(COLUMN_NOTE_POSITION, note.getPosition());
         values.put(COLUMN_NOTE_FOLDER_POSITION, note.getFolderPosition());
+        values.put(COLUMN_NOTE_COLOR_FOLDER, note.getColorFolder());
 
         db.insert(TABLE_NOTE, null, values);
 
@@ -84,7 +87,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         @SuppressLint("Recycle") Cursor cursor = db.query(TABLE_NOTE, new String[] { COLUMN_NOTE_ID,
                         COLUMN_NOTE_TITLE, COLUMN_NOTE_CONTENT, COLUMN_NOTE_FAVORITE, COLUMN_NOTE_PASSWORD,COLUMN_NOTE_VISUAL,
-                COLUMN_NOTE_FOLDER, COLUMN_NOTE_POSITION, COLUMN_NOTE_FOLDER_POSITION}, COLUMN_NOTE_ID + "=?",
+                COLUMN_NOTE_FOLDER, COLUMN_NOTE_POSITION, COLUMN_NOTE_FOLDER_POSITION, COLUMN_NOTE_COLOR_FOLDER}, COLUMN_NOTE_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null) cursor.moveToFirst();
         assert cursor != null;
@@ -94,7 +97,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         return new Note(cursor.getString(1), cursor.getString(2), cursor.getString(3).equals("true"),
                 cursor.getString(4), cursor.getString(5), cursor.getString(6), Integer.parseInt(cursor.getString(7)),
-                Integer.parseInt(cursor.getString(8)));
+                Integer.parseInt(cursor.getString(8)), cursor.getString(9));
     }
 
     public int getNotesCount() {

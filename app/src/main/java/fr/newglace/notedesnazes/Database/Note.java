@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class Note implements Serializable {
 
-    private String noteTitle, password, noteContent, visual, folder;
+    private String noteTitle, password, noteContent, visual, folder, colorFolder;
     private boolean favorite;
     private int position, folderPosition;
 
     public Note(String noteTitle, String noteContent, boolean favorite, String password, String visual, String folder,
-                int position, int folderPosition) {
+                int position, int folderPosition, String colorFolder) {
         this.noteTitle= noteTitle;
         this.noteContent= noteContent;
         this.favorite = favorite;
@@ -18,7 +18,13 @@ public class Note implements Serializable {
         this.folder = folder;
         this.position = position;
         this.folderPosition = folderPosition;
+        this.colorFolder = colorFolder;
     }
+
+    public String getColorFolder() {
+        return colorFolder;
+    }
+
     public String getNoteTitle() {
         return noteTitle;
     }
@@ -49,10 +55,5 @@ public class Note implements Serializable {
 
     public String getVisual() {
         return visual;
-    }
-
-    @Override
-    public String toString()  {
-        return this.noteTitle;
     }
 }
