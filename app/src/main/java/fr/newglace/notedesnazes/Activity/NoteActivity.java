@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.util.Size;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -72,6 +74,7 @@ import fr.newglace.notedesnazes.Database.Note;
 import fr.newglace.notedesnazes.QRCode.QRCodeFoundListener;
 import fr.newglace.notedesnazes.QRCode.QRCodeImageAnalyzer;
 import fr.newglace.notedesnazes.R;
+import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.Dialog.ColorNote;
 import fr.newglace.notedesnazes.Styles.Dialog.OptionNoteEdit;
 import fr.newglace.notedesnazes.Styles.Dialog.PasswordNoteConfig;
@@ -94,8 +97,16 @@ public class NoteActivity extends AppCompatActivity {
     private ImageView star,option,addImage,normal,center,opposite;
     private Space space, space4, space5, space3, space11;
     private SeekBar seekBar;
-    private int descHeight, phoneHeight, descWidth;
+    private int descHeight;
+    private int descWidth;
     private reSize2 size = new reSize2();
+
+    final boolean[] finalFavorite = {false};
+    final String[] finalPassword = {""};
+    String finalFolder;
+    int finalPosition;
+    int finalFolderPosition;
+    String finalColor = "#ff0000";
 
     public InputFilter filter = (charSequence, i, i1, spanned, i2, i3) -> {
         String blockCharSet = "\n";
@@ -112,7 +123,29 @@ public class NoteActivity extends AppCompatActivity {
             previewView.setVisibility(View.INVISIBLE);
             imageAnalysis.clearAnalyzer();
             desc.setVisibility(View.VISIBLE);
-        } else super.onBackPressed();
+        } else {
+            Log.d("TAG", "onBackPressed: ");
+            String titleText = title.getText().toString();
+            String descText = desc.getText().toString();
+
+            if (titleText.length() == 0) titleText = descText.substring(0, Math.min(19, descText.length()));
+            titleText = titleText.replaceAll("\n", " ");
+
+            if (descText.length() != 0) {
+                Spannable span = desc.getText();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    visual = generatedSpan(span);
+                }
+
+                Note note = new Note(titleText, desc.getText().toString(), finalFavorite[0], finalPassword[0], visual, finalFolder, finalPosition, finalFolderPosition, finalColor);
+                if (id == -1) db.addNote(db.getNotesCount(), note);
+                else db.editNote(id, note);
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else super.onBackPressed();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -120,6 +153,7 @@ public class NoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+        TextView imageView = findViewById(R.id.textView7);
         button = findViewById(R.id.add_notes);
         bold = findViewById(R.id.bold);
         italic = findViewById(R.id.italic);
@@ -187,7 +221,16 @@ public class NoteActivity extends AppCompatActivity {
         String folder = bundle.getString("folder");
 
         reSize();
-
+        Colors colors = new Colors();
+        Drawable draw = activity.getDrawable(R.drawable.button2);
+        Drawable draw2 = activity.getDrawable(R.drawable.button);
+        colors.editColor(imageView, 0, null);
+        colors.editColor(textView2, 1, null);
+        colors.editColor(blockMarkDown, 2, draw);
+        colors.editColor(button, 2, draw2);
+        Window window = getWindow();
+        window.setNavigationBarColor(Color.parseColor(colors.getColor(1)));
+        window.setStatusBarColor(Color.parseColor(colors.getColor(1)));
         if (id != -1) {
             this.title.setText(db.getNote(id).getNoteTitle());
             this.desc.setText(db.getNote(id).getNoteContent());
@@ -197,7 +240,7 @@ public class NoteActivity extends AppCompatActivity {
             folder = db.getNote(id).getFolder();
             folderPosition = db.getNote(id).getFolderPosition();
             position = db.getNote(id).getPosition();
-
+            finalColor = db.getNote(id).getColorFolder();
             String[] visuals = visual.split("/");
             Spannable span = this.desc.getText();
             for (String v : visuals) {
@@ -225,11 +268,11 @@ public class NoteActivity extends AppCompatActivity {
             this.desc.setText(span);
         }
 
-        final boolean[] finalFavorite = {favorite[0]};
-        final String[] finalPassword = {password};
-        String finalFolder = folder;
-        int finalPosition = position;
-        int finalFolderPosition = folderPosition;
+        finalFavorite[0] = favorite[0];
+        finalPassword[0] = password;
+        finalFolder = folder;
+        finalPosition = position;
+        finalFolderPosition = folderPosition;
 
         option.setOnClickListener(view12 -> {
             if (previewView.getVisibility() != View.INVISIBLE) return;
@@ -345,7 +388,7 @@ public class NoteActivity extends AppCompatActivity {
                 Spannable span = desc.getText();
                 visual = generatedSpan(span);
 
-                Note note = new Note(titleText, desc.getText().toString(), finalFavorite[0], finalPassword[0], visual, finalFolder, finalPosition, finalFolderPosition);
+                Note note = new Note(titleText, desc.getText().toString(), finalFavorite[0], finalPassword[0], visual, finalFolder, finalPosition, finalFolderPosition, finalColor);
                 if (id == -1) db.addNote(db.getNotesCount(), note);
                 else db.editNote(id, note);
 
@@ -371,7 +414,7 @@ public class NoteActivity extends AppCompatActivity {
             Intent i = new Intent();
             i.setType("image/*");
             i.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(i, "Select Picture"), 201);
+            activity.startActivityForResult(Intent.createChooser(i, "Select Picture"), 201);
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -398,22 +441,32 @@ public class NoteActivity extends AppCompatActivity {
 
             }
         });
-        final boolean[] editDesc = {false};
-        bold.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect r = new Rect();
-            bold.getWindowVisibleDisplayFrame(r);
-            int visible = r.bottom - r.top;
-
-            if (phoneHeight == visible && editDesc[0]) {
+        boolean[] check = {true};
+        Window mRootWindow = getWindow();
+        View mRootView = mRootWindow.getDecorView().findViewById(android.R.id.content);
+        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            int heightDiff = mRootView.getRootView().getHeight()- mRootView.getHeight();
+            if (heightDiff < 250 && check[0]) {
+                // KeyBoard Open
                 size.reSize2(desc, descWidth, descHeight);
                 size.reSize2(previewView, descWidth, descHeight);
-                editDesc[0] = false;
-            } else if (phoneHeight != visible && !editDesc[0]) {
-                editDesc[0] = true;
-                size.reSize2(desc, descWidth, descHeight-(phoneHeight-visible));
-                size.reSize2(previewView, descWidth, descHeight-(phoneHeight-visible));
-            }
+                check[0] = false;
+            } else if (!check[0] && heightDiff >= 250) {
+                // KeyBoard Close
+                int navigationHeight = 0;
+                int dpi = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+                if (dpi > 0) navigationHeight = (int) getResources().getDimension(dpi);
 
+                Rect r = new Rect();
+
+                bold.getWindowVisibleDisplayFrame(r);
+                int screenHeight = bold.getRootView().getHeight();
+                int keyboardHeight = screenHeight - (r.bottom);
+
+                size.reSize2(desc, descWidth, descHeight - keyboardHeight + navigationHeight);
+                size.reSize2(previewView, descWidth, descHeight - keyboardHeight + navigationHeight);
+                check[0] = true;
+            }
         });
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -705,7 +758,7 @@ public class NoteActivity extends AppCompatActivity {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(i, "Select Picture"), 200);
+        activity.startActivityForResult(Intent.createChooser(i, "Select Picture"), 200);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -804,9 +857,9 @@ public class NoteActivity extends AppCompatActivity {
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         int phoneWidth = metrics.widthPixels;
-        phoneHeight = metrics.heightPixels;
+        int phoneHeight = metrics.heightPixels;
 
-        int textView2Height = (int) (phoneHeight/12d);
+        int textView2Height = (int) (phoneHeight /12d);
         int titleSize = (int) (textView2Height/2.5d);
         int titleWidth = phoneWidth - (titleSize * 2) - (int) (phoneWidth/10d);
 
@@ -816,21 +869,20 @@ public class NoteActivity extends AppCompatActivity {
         size.reSize2(option, titleSize, titleSize);
         size.reSize2(title, titleWidth, titleSize, true);
         size.reSize2(space, phoneWidth - (int) (phoneWidth*0.1), 0);
-        size.reSize2(space5, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
-        size.reSize2(space3, (int) (phoneHeight*0.02), (int) (phoneHeight*0.02));
-        size.reSize2(space4, 0, (int) (phoneHeight*0.02));
+        size.reSize2(space5, (int) (phoneHeight *0.02), (int) (phoneHeight *0.02));
+        size.reSize2(space3, (int) (phoneHeight *0.02), (int) (phoneHeight *0.02));
+        size.reSize2(space4, 0, (int) (phoneHeight *0.02));
 
         int buttonWidth = (int) ((phoneWidth/19d) * 2d);
-        int buttonHeight = (int) (phoneHeight/16d);
+        int buttonHeight = (int) (phoneHeight /16d);
         int iconButtonSize = Math.min(buttonWidth, buttonHeight) - (int) (Math.min(buttonWidth, buttonHeight) * 0.40d);
 
         size.reSize2(button, Math.min(buttonWidth, buttonHeight), Math.min(buttonWidth, buttonHeight));
         size.reSize2(iconButton, iconButtonSize, iconButtonSize);
 
         int blockWidth = (int) ((phoneWidth/19d) * 11d);
-        int blockHeight = (int) (phoneHeight/8d);
-
-        descHeight = phoneHeight - titleSize - (int) ((phoneHeight*0.02) * 5) - blockHeight;
+        int blockHeight = (int) (phoneHeight /8d);
+        descHeight = phoneHeight - titleSize - (int) ((phoneHeight *0.02) * 7) - blockHeight;
         descWidth = phoneWidth - (int) (phoneWidth*0.1);
 
         desc.setScrollBarSize(1);

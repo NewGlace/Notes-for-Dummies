@@ -2,6 +2,8 @@ package fr.newglace.notedesnazes.Activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,10 +12,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.KeyboardShortcutGroup;
+import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import fr.newglace.notedesnazes.Database.MyDatabaseHelper;
 import fr.newglace.notedesnazes.Database.Note;
+import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.Dialog.NewFolder;
 import fr.newglace.notedesnazes.Styles.Dialog.OptionMove;
 import fr.newglace.notedesnazes.Styles.Notes.ManageNotes;
@@ -174,7 +182,17 @@ public class MainActivity extends AppCompatActivity {
         textView2 = findViewById(R.id.textView2);
         space = findViewById(R.id.space);
         option = findViewById(R.id.options);
+        TextView textView7 = findViewById(R.id.textView7);
 
+        final Colors colors = new Colors();
+        colors.editColor(footer, 1, null);
+        colors.editColor(textView2, 1, null);
+        colors.editColor(textView7, 0, null);
+        Drawable draw2 = getDrawable(R.drawable.button);
+        colors.editColor(button, 2, draw2);
+        Window window = getWindow();
+        window.setNavigationBarColor(Color.parseColor(colors.getColor(1)));
+        window.setStatusBarColor(Color.parseColor(colors.getColor(1)));
         reSize();
         final String[] oldSearch = {""};
         noteList(oldSearch[0], selectFolder);
@@ -191,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                     for (String id : selects.subSequence(1, selects.length() - 1).toString().split("!")) {
                         int i = Integer.parseInt(id);
 
-                        db.editNote(i, new Note(db.getNote(i).getNoteTitle(), db.getNote(i).getNoteContent(), db.getNote(i).isFavorite(), db.getNote(i).getPassword(), db.getNote(i).getVisual(), "",db.getNote(i).getPosition(), 0));
+                        db.editNote(i, new Note(db.getNote(i).getNoteTitle(), db.getNote(i).getNoteContent(), db.getNote(i).isFavorite(), db.getNote(i).getPassword(), db.getNote(i).getVisual(), "",db.getNote(i).getPosition(), 0, db.getNote(i).getColorFolder()));
                     }
                     setSelect(false);
                     noteList(searchBar.getText().toString(), selectFolder);
@@ -205,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
 
                     EditText folder = d.getNewFolder();
                     folder.setFilters(new InputFilter[] {filter});
-
                     folder.setOnEditorActionListener((textView, i1, keyEvent) -> {
                         if (folder.getText().toString().length() != 0) {
                             selectFolder = folder.getText().toString();
@@ -213,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
                             for (String id : selects.subSequence(1, selects.length() - 1).toString().split("!")) {
                                 int i = Integer.parseInt(id);
 
-                                db.editNote(i, new Note(db.getNote(i).getNoteTitle(), db.getNote(i).getNoteContent(), db.getNote(i).isFavorite(), db.getNote(i).getPassword(), db.getNote(i).getVisual(), selectFolder,db.getNote(i).getPosition(), 0));
+                                db.editNote(i, new Note(db.getNote(i).getNoteTitle(), db.getNote(i).getNoteContent(), db.getNote(i).isFavorite(), db.getNote(i).getPassword(), db.getNote(i).getVisual(), selectFolder,db.getNote(i).getPosition(), 0, db.getNote(i).getColorFolder()));
                             }
                             setSelect(false);
                             noteList(searchBar.getText().toString(), selectFolder);
@@ -304,19 +321,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        searchBar.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            if (!oldSearch[0].equals(searchBar.getText().toString().toLowerCase())) {
-                oldSearch[0] = searchBar.getText().toString().toLowerCase();
-                noteList(oldSearch[0], selectFolder);
+        final int[] screenHeight = {0};
+        final int[] keypadHeight = {0};
+        final boolean[] updateSearch = {false};
+        final Handler h = new Handler();
+        final Runnable r2 = new Runnable() {
+            @Override
+            public void run() {
+                if (keypadHeight[0] > screenHeight[0] * 0.15d) {
+                     if (!oldSearch[0].equals(searchBar.getText().toString().toLowerCase())) {
+                        oldSearch[0] = searchBar.getText().toString().toLowerCase();
+                        noteList(oldSearch[0], selectFolder);
+                    }
+                    h.postDelayed(this, 50);
+                } else updateSearch[0] = false;
             }
+        };
 
+        searchBar.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             Rect r = new Rect();
             searchBar.getWindowVisibleDisplayFrame(r);
 
-            int screenHeight = searchBar.getRootView().getHeight();
-            int keypadHeight = screenHeight - r.bottom;
-            if (keypadHeight > screenHeight * 0.15) {
-                check[0] = 0;
+            screenHeight[0] = searchBar.getRootView().getHeight();
+            keypadHeight[0] = screenHeight[0] - r.bottom;
+            if ((screenHeight[0] * 0.15d) < keypadHeight[0] && !updateSearch[0]) {
+                h.postDelayed(r2, 0);
+                updateSearch[0] = true;
+            }
+            if (keypadHeight[0] > screenHeight[0] * 0.15d) {
+                if (check[0] == 1) check[0] = 0;
             } else {
                 if (check[1] == 1) {
                     if (check[0] > 10) {
@@ -336,7 +369,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                    } else check[0]++;
+                    } else {
+                        check[0]++;
+                    }
                 }
             }
         });
@@ -385,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if ((stringFolder.length() == 0 && !folder.toString().contains("!"+thisNote.getFolder()+"!")) || stringFolder.equals(thisNote.getFolder())) {
                     notes.add(new noteArray(thisNote.getNoteTitle(), thisNote.getNoteContent(), i, thisNote.isFavorite(), thisNote.getPassword(),
-                            thisNote.getVisual(), thisNote.getFolder(), thisNote.getPosition(), thisNote.getFolderPosition()));
+                            thisNote.getVisual(), thisNote.getFolder(), thisNote.getPosition(), thisNote.getFolderPosition(), thisNote.getColorFolder()));
 
                     if (thisNote.getFolder().length() != 0 && isFolder()) note.append("f-").append(thisNote.getFolder()).append("!");
                     else note.append(i).append("!");
@@ -397,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                 edit = false;
             }
         }
-        if (notes.size() == 0) notes.add(new noteArray("", "", 0, false, "", "", "", 0, 0));
+        if (notes.size() == 0) notes.add(new noteArray("", "", 0, false, "", "", "", 0, 0, "#ffffff"));
         if (edit && !selects.equals(note.toString())) selectAll.setImageDrawable(getDrawable(R.drawable.select_all));
 
         selectString = note.toString();
