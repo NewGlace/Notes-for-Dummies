@@ -2,18 +2,25 @@ package fr.newglace.notedesnazes.Styles.Dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+
 import fr.newglace.notedesnazes.R;
+import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class OptionNote extends Dialog {
     private ImageView delete, password, favorite, favoriteColor, imageView5;
     private TextView lockText;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public OptionNote(Activity activity) {
         super(activity, R.style.Theme_AppCompat_DayNight_Dialog);
         setContentView(R.layout.dialog_options_note);
@@ -53,6 +60,13 @@ public class OptionNote extends Dialog {
         size.reSize2(new View[]{favoriteColor, imageView6, imageView5}, (int) (spaceSize*1.5d), (int) (spaceSize*1.5d));
 
         size.reSize2(imageView, (int) (passwordWidth*1.05d), (int) (passwordHeight*3d + spaceSize*4));
+        Colors colors = new Colors();
+        Drawable draw = activity.getDrawable(R.drawable.bg_notes);
+        Drawable draw2 = activity.getDrawable(R.drawable.bg_notes);
+        colors.editColor(imageView, 0, draw2);
+        colors.editColor(delete, 1, draw);
+        colors.editColor(password, 1, draw);
+        colors.editColor(favorite, 1, draw);
     }
 
     public ImageView getDelete() {

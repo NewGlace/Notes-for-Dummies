@@ -12,8 +12,10 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import fr.newglace.notedesnazes.Activity.NoteActivity;
 import fr.newglace.notedesnazes.R;
+import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class ColorNote extends Dialog {
@@ -38,7 +41,6 @@ public class ColorNote extends Dialog {
     private final float[] color = { 1.f, 1.f, 1.f };
     private float space;
     private float cursorSize;
-
     @RequiresApi(api = Build.VERSION_CODES.Q)
     public ColorNote(Activity activity) {
         super(activity, R.style.Theme_AppCompat_DayNight_Dialog);
@@ -58,6 +60,13 @@ public class ColorNote extends Dialog {
         reSize();
         editColorPickerHue(1.f);
         hueSelect.setX((float) (hue.getMeasuredWidth() / 360d * 0.001f));
+
+        Colors colors = new Colors();
+        Drawable draw = activity.getDrawable(R.drawable.bg_notes);
+        Drawable draw2 = activity.getDrawable(R.drawable.bg_notes);
+        colors.editColor(imageView, 0, draw2);
+        colors.editColor(hexColor, 1, draw);
+        colors.editColor(valid, 1, draw);
     }
     public TextView getValid() {
         return valid;
@@ -125,8 +134,8 @@ public class ColorNote extends Dialog {
         Canvas canvas = new Canvas(bitmap);
         Paint strokePaint = new Paint();
         strokePaint.setStyle(Paint.Style.FILL);
-        strokePaint.setColor(Color.parseColor("#004596"));
-
+        Colors colors = new Colors();
+        strokePaint.setColor(Color.parseColor(colors.getColor(1)));
         if (paint == null) {
             paint = new Paint();
             shader = new LinearGradient(5.f, 5.f, 5.f, colorPickerHeight-5, 0xffffffff, 0xff000000, Shader.TileMode.CLAMP);

@@ -26,9 +26,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:gravity="center"
-        android:hint="..."
+        android:hint="...."
+        android:imeOptions="actionSend"
+        android:inputType="text"
         android:textColorHint="#fff"
-        android:maxLength="20"
         android:textColor="#fff" />
 
     <TextView

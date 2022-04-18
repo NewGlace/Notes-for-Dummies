@@ -1,8 +1,7 @@
 package fr.newglace.notedesnazes.Styles.Notes;
 
-import android.app.ActionBar;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,14 +9,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.text.InputFilter;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -31,6 +28,7 @@ import fr.newglace.notedesnazes.Activity.MainActivity;
 import fr.newglace.notedesnazes.Database.MyDatabaseHelper;
 import fr.newglace.notedesnazes.Database.Note;
 import fr.newglace.notedesnazes.R;
+import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.Dialog.NewFolder;
 import fr.newglace.notedesnazes.Styles.Dialog.OptionNote;
 import fr.newglace.notedesnazes.Styles.Dialog.PasswordNote;
@@ -42,7 +40,6 @@ public class ManageNotes extends BaseAdapter {
     private LayoutInflater inflater;
     private MainActivity activity;
     private MyDatabaseHelper db;
-    private ListView listView;
     private boolean select;
     private int selectAll = 0;
 
@@ -58,7 +55,6 @@ public class ManageNotes extends BaseAdapter {
         this.inflater = LayoutInflater.from(activity);
         this.activity = activity;
         this.db = new MyDatabaseHelper(activity);
-        this.listView = listView;
         this.select = select;
         if (selectAll.length == 1) this.selectAll = selectAll[0];
     }
@@ -78,20 +74,25 @@ public class ManageNotes extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("InflateParams")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        if (select) view = inflater.inflate(R.layout.note_layout2, null);
+        noteArray item = getItem(i);
+        String folder = item.getFolder();
+        boolean isFolder = folder.length() > 0 && activity.isFolder();
+
+        if (isFolder && select) view = inflater.inflate(R.layout.folder_layout2, null);
+        else if (isFolder) view = inflater.inflate(R.layout.folder_layout, null);
+        else if (select) view = inflater.inflate(R.layout.note_layout2, null);
         else view = inflater.inflate(R.layout.note_layout, null);
 
         reSize2 size = new reSize2();
-        noteArray item = getItem(i);
         String title = item.getTitle();
         String desc = item.getDesc();
         final String[] password = {item.getPassword()};
         final boolean[] favorite = {item.isFavorite()};
         String visual = item.getVisual();
-        String folder = item.getFolder();
         int folderPosition = item.getFolderPosition();
         int p = item.getPosition();
         int position = item.getI();
@@ -105,6 +106,7 @@ public class ManageNotes extends BaseAdapter {
         Space space6 = view.findViewById(R.id.space6);
         Space space7 = view.findViewById(R.id.space7);
         final Drawable draw = activity.getDrawable(R.drawable.bg_notes);
+        final Drawable draw2 = activity.getDrawable(R.drawable.bg_folder);
 
         final DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -150,6 +152,14 @@ public class ManageNotes extends BaseAdapter {
             activity.setSelect(select);
             return false;
         });
+
+        Colors colors= new Colors();
+        colors.editColor(background, 1, draw);
+        if (isFolder) {
+            ImageView background2 = view.findViewById(R.id.textView4);
+            size.reSize2(background2, (int) (backHeight/2d), backHeight);
+            editColor(item.getColorFolder(), draw2, background2);
+        }
 
         if (favorite[0]) editColor("#D5B200", draw, background);
         final boolean[] optionUnClick = {true};
@@ -210,8 +220,6 @@ public class ManageNotes extends BaseAdapter {
         if (folder.length() != 0 && activity.isFolder()) {
             titleNote.setText(folder);
             descNote.setText("");
-
-            editColor("#ff0000", draw, background);
 
             background.setOnClickListener(view1 -> {
                 if (select) {
@@ -304,7 +312,7 @@ public class ManageNotes extends BaseAdapter {
                     dialog.getLockText().setText("Déverrouiller");
                     dialog.getImageView5().setImageDrawable(activity.getDrawable(R.drawable.password_open));
                 }
-
+                colors.editColor(background, 1, draw);
                 if (favorite[0]) editColor("#D5B200", draw, background);
 
                 dialog.getDelete().setOnClickListener(view121 -> {
@@ -320,7 +328,7 @@ public class ManageNotes extends BaseAdapter {
 
                     if (favorite[0]) {
                         Toast.makeText(activity, "La note a été retiré des favoris", Toast.LENGTH_SHORT).show();
-                        editColor("#192241", draw, background);
+                        editColor(colors.getColor(1), draw, background);
                     } else {
                         Toast.makeText(activity, "La note a été ajouté aux favoris", Toast.LENGTH_SHORT).show();
                         editColor("#D5B200", draw, background);

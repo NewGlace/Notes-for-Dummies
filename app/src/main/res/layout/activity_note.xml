@@ -10,6 +10,12 @@
     tools:ignore="HardcodedText,AutoFill,TextFields,ContentDescription,SmallSp" >
 
     <TextView
+        android:id="@+id/textView7"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0f0f22" />
+
+    <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="65dp"

@@ -16,12 +16,12 @@ import fr.newglace.notedesnazes.R;
 import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
-public class OptionNoteEdit extends Dialog {
+public class ConfigApp extends Dialog {
     private ImageView delete, password, qRCode, loadGallery, loadCamera, imageView5;
     private TextView lockText;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public OptionNoteEdit(Activity activity) {
+    public ConfigApp(Activity activity) {
         super(activity, R.style.Theme_AppCompat_DayNight_Dialog);
         setContentView(R.layout.dialog_options_note_edit);
 

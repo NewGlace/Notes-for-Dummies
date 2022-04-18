@@ -1,12 +1,12 @@
 package fr.newglace.notedesnazes.Styles.Notes;
 
 public class noteArray {
-    private String title, desc, password, visual, folder;
+    private String title, desc, password, visual, folder, colorFolder;
     private int i, position, folderPosition;
     private boolean favorite;
 
     public noteArray(String title, String desc, int i, boolean favorite, String password, String visual,
-                     String folder, int position, int folderPosition) {
+                     String folder, int position, int folderPosition, String colorFolder) {
         this.title = title;
         this.desc = desc;
         this.i = i;
@@ -16,6 +16,7 @@ public class noteArray {
         this.folder = folder;
         this.position = position;
         this.folderPosition = folderPosition;
+        this.colorFolder = colorFolder;
     }
 
     public int getI() {
@@ -44,5 +45,8 @@ public class noteArray {
     }
     public int getFolderPosition() {
         return folderPosition;
+    }
+    public String getColorFolder() {
+        return colorFolder;
     }
 }

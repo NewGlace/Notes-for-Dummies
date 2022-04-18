@@ -2,19 +2,26 @@ package fr.newglace.notedesnazes.Styles.Dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+
 import fr.newglace.notedesnazes.R;
+import fr.newglace.notedesnazes.Styles.Colors;
 import fr.newglace.notedesnazes.Styles.reSize2;
 
 public class OptionMove extends Dialog {
     private ImageView newFolder, backFolder;
     private Spinner moveFolder;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public OptionMove(Activity activity) {
         super(activity, R.style.Theme_AppCompat_DayNight_Dialog);
         setContentView(R.layout.dialog_options_move);
@@ -53,6 +60,15 @@ public class OptionMove extends Dialog {
         size.reSize2(new View[]{textView4, imageView6, imageView5}, (int) (spaceSize*1.5d), (int) (spaceSize*1.5d));
 
         size.reSize2(imageView, (int) (passwordWidth*1.05d), (int) (passwordHeight*3d + spaceSize*4));
+
+        Colors colors = new Colors();
+        Drawable draw = activity.getDrawable(R.drawable.bg_notes);
+        Drawable draw2 = activity.getDrawable(R.drawable.bg_notes);
+        colors.editColor(imageView, 0, draw2);
+        colors.editColor(backFolder, 1, draw);
+        colors.editColor(newFolder, 1, draw);
+        colors.editColor(imageView4, 1, draw);
+        colors.editColor(backFolder, 1, draw);
     }
 
     public ImageView getBackFolder() {
