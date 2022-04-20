@@ -1,75 +1,55 @@
-package fr.newglace.notedesnazes;
+package fr.newglace.notedesnazes
 
-import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.ListView;
-import android.widget.RemoteViews;
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.widget.RemoteViews
+import fr.newglace.notedesnazes.database.note.local.MyDatabaseHelper
 
-import java.util.ArrayList;
-import java.util.List;
-
-import fr.newglace.notedesnazes.Activity.NoteActivity;
-import fr.newglace.notedesnazes.Database.MyDatabaseHelper;
-import fr.newglace.notedesnazes.Database.Note;
-
-public class NewAppWidget extends AppWidgetProvider {
-
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        MyDatabaseHelper db = new MyDatabaseHelper(context);
-        Note note = db.getNote(0);
-
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
-
-        views.setTextViewText(R.id.note_title_widget, note.getNoteTitle());
-        views.setTextViewText(R.id.note_desc_widget, note.getNoteContent());
-        views.setTextColor(R.id.note_desc_widget, 737683);
-
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-        appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views);
-    }
-
-    @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+class NewAppWidget : AppWidgetProvider() {
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        for (appWidgetId in appWidgetIds) {
+            updateAppWidget(context, appWidgetManager, appWidgetId)
         }
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        MyDatabaseHelper db = new MyDatabaseHelper(context);
-        int noteNumber = 1;
-        if (db.getNotesCount() > noteNumber && noteNumber != -1) {
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
-            ComponentName watchWidget = new ComponentName(context, NewAppWidget.class);
-
-            Note note = db.getNote(noteNumber);
-            views.setTextViewText(R.id.note_title, note.getNoteTitle());
-            views.setTextViewText(R.id.note_desc, note.getNoteContent());
-
-            appWidgetManager.updateAppWidget(watchWidget, views);
-            updateAppWidget(context, appWidgetManager, 0);
+    override fun onReceive(context: Context, intent: Intent) {
+        val db = MyDatabaseHelper(context)
+        val noteNumber = 1
+        if (db.notesCount > noteNumber && noteNumber != -1) {
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val views = RemoteViews(context.packageName, R.layout.new_app_widget)
+            val watchWidget = ComponentName(context, NewAppWidget::class.java)
+            val note = db.getNote(noteNumber)
+            views.setTextViewText(R.id.note_title, note.noteTitle)
+            views.setTextViewText(R.id.note_desc, note.noteContent)
+            appWidgetManager.updateAppWidget(watchWidget, views)
+            updateAppWidget(context, appWidgetManager, 0)
         }
-
-        super.onReceive(context, intent);
+        super.onReceive(context, intent)
     }
 
-    @Override
-    public void onEnabled(Context context) {
+    override fun onEnabled(context: Context) {
         // Enter relevant functionality for when the first widget is created
     }
 
-    @Override
-    public void onDisabled(Context context) {
+    override fun onDisabled(context: Context) {
         // Enter relevant functionality for when the last widget is disabled
+    }
+
+    companion object {
+        fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+            val db = MyDatabaseHelper(context)
+            val note = db.getNote(0)
+            val views = RemoteViews(context.packageName, R.layout.new_app_widget)
+            views.setTextViewText(R.id.note_title_widget, note.noteTitle)
+            views.setTextViewText(R.id.note_desc_widget, note.noteContent)
+            views.setTextColor(R.id.note_desc_widget, 737683)
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+            appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
+        }
     }
 }
 
@@ -160,4 +140,3 @@ public class NewAppWidget extends AppWidgetProvider {
             }
         }
     }*/
-

@@ -23,7 +23,7 @@
         </receiver>
 
         <activity
-            android:name=".Activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity.NoteActivity"
+            android:name=".activity.NoteActivity"
             android:screenOrientation="portrait" />
     </application>
 
