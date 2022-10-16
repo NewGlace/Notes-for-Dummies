@@ -56,7 +56,7 @@ class client {
     init {
         val factory = WebSocketFactory().setConnectionTimeout(5000)
         try {
-            ws = factory.createSocket("ws://45.90.160.218:2408")
+            ws = factory.createSocket("ws://")
             ws?.addListener(object : WebSocketAdapter() {
                 @Throws(Exception::class)
                 override fun onTextMessage(websocket: WebSocket, message: String) {
